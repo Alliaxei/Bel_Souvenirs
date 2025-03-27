@@ -1,0 +1,16 @@
+﻿@model Bel_Souvenirs.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Вход";
+    Layout = "_Layout";
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function() {
+            $('#loginModal').modal('show');
+        });
+    </script>
+}
