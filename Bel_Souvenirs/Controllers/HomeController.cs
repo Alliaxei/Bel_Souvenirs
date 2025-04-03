@@ -8,7 +8,7 @@ namespace Bel_Souvenirs.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly AppDbContext _appDbContext;
-        public HomeController(ILogger<HomeController> logger,AppDbContext appDbContext)
+        public HomeController(ILogger<HomeController> logger, AppDbContext appDbContext)
         {
             _logger = logger;
             _appDbContext = appDbContext;

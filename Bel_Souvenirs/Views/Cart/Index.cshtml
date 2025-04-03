@@ -1,0 +1,48 @@
+﻿@model Bel_Souvenirs.Models.Cart
+
+@{
+    ViewData["Title"] = "Корзина";
+}
+
+
+<h2>Ваша корзина</h2>
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <p>Пожалуйста, авторизуйтесь на сайте</p>
+}
+else if (Model.Items.Count == 0)
+{
+    <p>Корзина пуста</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Цена</th>
+                <th>Количество</th>
+                <th>Итого</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.Product.Name</td>
+                    <td>@item.Quantity</td>
+                    <td>
+                        <a asp-action="RemoveFromCart" asp-route-id="@item.Id" class="btn btn-danger">Удалить</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="text-end">
+        <h4>Общая сумма: @Model.Items.Sum(i => i.Quantity).ToString("C")</h4>
+        <a asp-controller="Order" asp-action="Checkout" class="btn btn-primary">Оформить заказ</a>
+    </div>
+}

@@ -9,14 +9,17 @@ namespace Bel_Souvenirs.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-
+        private readonly AppDbContext _appDbContext;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            AppDbContext appDbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _appDbContext = appDbContext;
+
         }
 
         public IActionResult Index()
@@ -38,29 +41,43 @@ namespace Bel_Souvenirs.Controllers
                 var user = new ApplicationUser
                 {
                     UserName = model.Email,
-                    Email = model.Email
+                    Email = model.Email,
+                    FullName = "",
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)
                 {
+                    var cart = new Cart
+                    {
+                        UserId = user.Id,
+
+                        Items = new List<CartItem>()
+                    };
+
+                    _appDbContext.Carts.Add(cart);
+                    await _appDbContext.SaveChangesAsync();
+
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                    return Json(new {redirect = Url.Action("Index", "Home")});
                 }
 
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
+                return PartialView("_RegisterModal", model);
             }
-            return View(model);
+
+            return PartialView("_RegisterModal", model);
         }
 
         [HttpGet]
         public IActionResult Login(bool showModal = false)
         {
             ViewBag.ShowModal = showModal;
+
             return View();
         }
 
@@ -74,11 +91,15 @@ namespace Bel_Souvenirs.Controllers
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    return Json(new { redirect = Url.Action("Index", "Home") });
                 }
-                ModelState.AddModelError(string.Empty, "Неверный логин или пароль");
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Неверный Email или пароль");
+                }
+                return PartialView("_LoginModal", model);
             }
-            return View(model);
+            return PartialView("_LoginModal", model);
         }
 
         [HttpPost]

@@ -1,0 +1,95 @@
+﻿@model List<Bel_Souvenirs.Models.Product>
+@{
+    ViewData["Title"] = "Каталог товаров";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <form asp-action="Index" method="get" class="form-inline">
+                <div class="input-group w-100">
+                    <input type="text" class="form-control" name="searchString"
+                           value="@ViewData["CurrentFilter"]" placeholder="Поиск товаров...">
+                    <button class="btn btn-success" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="dropdown">
+                <button class="btn btn-outline-success dropdown-toggle w-100"
+                        type="button" data-bs-toggle="dropdown">
+                    Сортировка
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" asp-action="Index"
+                           asp-route-sortOrder="@ViewData["NameSort"]">По названию</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" asp-action="Index"
+                           asp-route-sortOrder="@ViewData["PriceSort"]">По цене</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-filter"></i> Фильтры
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Категории</h5>
+                    <div class="list-group">
+                        <a asp-action="Index"
+                           class="list-group-item list-group-item-action @(string.IsNullOrEmpty(ViewBag.CurrentCategory) ? "active" : "")">
+                            Все категории
+                        </a>
+                        @foreach (var category in ViewBag.Categories)
+                        {
+                            <a asp-action="Index" asp-route-category="@category"
+                               class="list-group-item list-group-item-action @(ViewBag.CurrentCategory == category ? "active" : "")">
+                                @category
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            @if (Model != null && Model.Any())
+            {
+                <div class="row">
+                    @foreach (var product in Model)
+                    {
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <img src="@product.ImagePath" class="card-img-top" alt="@product.Name"
+                                     style="height: 200px; object-fit: cover;">
+                                <div class="card-body">
+                                    <h5 class="card-title">@product.Name</h5>
+                                    <p class="card-text">@product.Description</p>
+                                    <p class="text-success fw-bold">@product.Price.ToString("C")</p>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <button class="btn btn-success w-100">В корзину</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Товары не найдены
+                </div>
+            }
+        </div>
+    </div>
+</div>
