@@ -1,4 +1,5 @@
 ﻿using Bel_Souvenirs.Models;
+using Bel_Souvenirs.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -8,12 +9,13 @@ namespace Bel_Souvenirs.Controllers
     public class CartController : Controller
     {
         private readonly AppDbContext _appDbContext;
-        
-        public CartController(AppDbContext appDbContext)
+        private readonly CartService _cartService;
+        public CartController(AppDbContext appDbContext, CartService cartService)
         {
             _appDbContext = appDbContext;
+            _cartService = cartService;
         }
-        public IActionResult Index()
+        public async Task <IActionResult> Index()
         {
 
             if (!User.Identity.IsAuthenticated)
@@ -27,45 +29,47 @@ namespace Bel_Souvenirs.Controllers
                 .Include(c => c.Items) // Этот код привязывает товары к корзине
                 .ThenInclude(i => i.Product)
                 .FirstOrDefault(c => c.UserId == userId);
+
+            ViewBag.CartItemCount = await _cartService.GetCartItemsCountAsync();
             return View(cart);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddToCart(int productId)
+        {
+            var userId = User.Identity.IsAuthenticated ? User.FindFirstValue(ClaimTypes.NameIdentifier) : null;
+            if (userId == null)
+                return Json(new { success = false, message = "Требуется авторизация" });
+
+            var result = await _cartService.AddToCartAsync(productId, userId);
+
+            if (!result)
+            {
+                return Json(new { success = false, message = "Ошибка при добавлении товара в корзину" });
+            }
+
+            var cartCount = await _cartService.GetCartItemsCountAsync();
+            return Json(new { success = true, cartCount });
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> AddToCart([FromForm] int productId)
+        public async Task<IActionResult> RemoveFromCart(int productId)
         {
-            if (!User.Identity.IsAuthenticated)
+            var userId = User.Identity.IsAuthenticated ? User.FindFirstValue(ClaimTypes.NameIdentifier) : null;
+
+            if (userId == null) // В теории такого произойти не должно
+                return Json(new { success = false, message = "Требуется авторизация" });
+
+            var result = await _cartService.DeleteFromCartAsync(productId, userId);
+
+            if (!result)
             {
-                return View();
+                return Json(new { success = false, message = "Ошибка при удалении из корзины" });
             }
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var cart = _appDbContext.Carts
-                .Include(c => c.Items) //Нужно, чтобы доп данные загружались при нахождении корзины
-                .ThenInclude(i => i.Product) // По умолчанию используется ленивая загрузка
-                .FirstOrDefault(c => c.UserId == userId);
-
-            var product  = await _appDbContext.Products.FindAsync(productId);
-
-            var existingItem = cart.Items.FirstOrDefault(i => i.ProductId == productId);
-            if (existingItem != null)
-            {
-                existingItem.Quantity += 1;
-            }
-            else
-            {
-                cart.Items.Add(new CartItem
-                {
-                    ProductId = productId,
-                    Quantity = 1,
-                    Product = product,
-                });
-            }
-
-            await _appDbContext.SaveChangesAsync();
-            return RedirectToAction("Index");
+            var cartCount = await _cartService.GetCartItemsCountAsync();
+            return Json(new { success = true, cartCount });
         }
-
     }
 }

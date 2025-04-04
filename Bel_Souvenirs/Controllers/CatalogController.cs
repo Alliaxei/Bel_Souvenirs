@@ -1,4 +1,5 @@
 ﻿using Bel_Souvenirs.Models;
+using Bel_Souvenirs.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -13,7 +14,7 @@ namespace Bel_Souvenirs.Controllers
         {
             _dbContext = dbContext;
         }
-        public async Task<IActionResult> Index(string searchString, string category, string sortOrder)
+        public async Task<IActionResult> Index(string searchString, string category, string sortOrder, [FromServices] CartService cartService)
         {
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSort"] = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -52,8 +53,8 @@ namespace Bel_Souvenirs.Controllers
                  .Select(p => p.Category)
                  .Distinct()
                  .ToListAsync();
+            ViewBag.CartItemCount = await cartService.GetCartItemsCountAsync();
 
-            ViewBag.Categories = categories;
             return View(await products.ToListAsync());
         }
     }

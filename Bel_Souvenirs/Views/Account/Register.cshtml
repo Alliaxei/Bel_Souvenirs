@@ -7,7 +7,7 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card">
+            <div class="card-account">
                 <div class="card-header bg-primary text-white">
                     <h5 class="card-title mb-0">Регистрация нового аккаунта</h5>
                 </div>
@@ -19,6 +19,11 @@
                             <label asp-for="Email" class="form-label">Email</label>
                             <input asp-for="Email" class="form-control" type="email" required>
                             <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="UserName" class="form-label">Имя пользователя</label>
+                            <input asp-for="UserName" class="form-control type="text" required/>
+                            <span asp-validation-for="UserName" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">

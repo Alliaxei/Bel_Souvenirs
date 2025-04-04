@@ -49,13 +49,13 @@
                            class="list-group-item list-group-item-action @(string.IsNullOrEmpty(ViewBag.CurrentCategory) ? "active" : "")">
                             Все категории
                         </a>
-                        @foreach (var category in ViewBag.Categories)
-                        {
-                            <a asp-action="Index" asp-route-category="@category"
-                               class="list-group-item list-group-item-action @(ViewBag.CurrentCategory == category ? "active" : "")">
-                                @category
-                            </a>
-                        }
+                        @* @foreach (var category in ViewBag.Categories) *@
+                        @* { *@
+                        @*     <a asp-action="Index" asp-route-category="@category" *@
+                        @*        class="list-group-item list-group-item-action @(ViewBag.CurrentCategory == category ? "active" : "")"> *@
+                        @*         @category *@
+                        @*     </a> *@
+                        @* } *@
                     </div>
                 </div>
             </div>

@@ -40,7 +40,7 @@ namespace Bel_Souvenirs.Controllers
             {
                 var user = new ApplicationUser
                 {
-                    UserName = model.Email,
+                    UserName = model.UserName,
                     Email = model.Email,
                     FullName = "",
                 };
@@ -60,17 +60,17 @@ namespace Bel_Souvenirs.Controllers
                     await _appDbContext.SaveChangesAsync();
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    return Json(new {redirect = Url.Action("Index", "Home")});
+                    return RedirectToAction("Index", "Home");
                 }
 
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
-                return PartialView("_RegisterModal", model);
+                return View(model);
             }
 
-            return PartialView("_RegisterModal", model);
+            return View(model);
         }
 
         [HttpGet]
@@ -91,15 +91,15 @@ namespace Bel_Souvenirs.Controllers
 
                 if (result.Succeeded)
                 {
-                    return Json(new { redirect = Url.Action("Index", "Home") });
+                    return RedirectToAction("Index", "Home");
                 }
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Неверный Email или пароль");
                 }
-                return PartialView("_LoginModal", model);
+                return View(model);
             }
-            return PartialView("_LoginModal", model);
+            return View(model);
         }
 
         [HttpPost]

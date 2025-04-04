@@ -37,3 +37,25 @@ body {
     transform: scale(1.03);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+.card-account {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.animate__animated {
+    animation-duration: 0.5s;
+}
+
+.animate__bounce {
+    animation-name: bounce;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+}

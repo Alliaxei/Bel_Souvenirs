@@ -4,45 +4,132 @@
     ViewData["Title"] = "Корзина";
 }
 
+<div class="container mt-4">
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <div class="alert alert-warning">
+            <h4>Пожалуйста, авторизуйтесь на сайте</h4>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Войти</a>
+        </div>
+    }
+    else if (Model.Items.Count == 0)
+    {
+        <div class="empty-cart text-center py-5">
+            <img src="https://via.placeholder.com/200" alt="Пустая корзина" class="mb-4" style="opacity: 0.5;">
+            <h3 class="mb-3">Корзина пуста</h3>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Перейти к покупкам</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card-account mb-4">
+                    <div class="card-header bg-white">
+                        <h4 class="mb-0">Ваша корзина</h4>
+                        <span class="text-muted">@Model.Items.Count товар(ов)</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            @foreach (var item in Model.Items)
+                            {
+                                <div class="list-group-item">
+                                    <div class="row align-items-center">
+                                        <div class="col-2">
+                                            <img src="@(item.Product.ImagePath ?? "Изображение не найдено")"
+                                                 alt="@item.Product.Name"
+                                                 class="img-fluid rounded">
+                                        </div>
+                                        <div class="col-5">
+                                            <h5 class="mb-1">@item.Product.Name</h5>
+                                            <small class="text-muted">Артикул: @item.Product.Id</small>
+                                        </div>
+                                        <div class="col-2">
+                                            <div class="input-group">
+                                                <button class="btn btn-outline-secondary minus-btn" type="button">-</button>
+                                                <input type="text" class="form-control text-center quantity-input"
+                                                       value="@item.Quantity" data-id="@item.Id">
+                                                <button class="btn btn-outline-secondary plus-btn" type="button">+</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-2 text-end">
+                                            <h5 class="mb-0">@((item.Quantity * item.Product.Price).ToString("C"))</h5>
+                                            <small class="text-muted">@item.Product.Price.ToString("C") за шт.</small>
+                                        </div>
+                                        <div class="col-1 text-end">
+                                            <a asp-action="RemoveFromCart" asp-route-id="@item.Id"
+                                               class="btn btn-link text-danger" title="Удалить">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-<h2>Ваша корзина</h2>
+            <div class="col-md-4">
+                <div class="card-account sticky-top" style="top: 20px;">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Ваш заказ</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Товары (@Model.Items.Sum(i => i.Quantity))</span>
+                            <span>@Model.Items.Sum(i => i.Quantity * i.Product.Price).ToString("C")</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Доставка</span>
+                            <span class="text-success">Бесплатно</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between fw-bold fs-5">
+                            <span>Итого</span>
+                            <span>@Model.Items.Sum(i => i.Quantity * i.Product.Price).ToString("C")</span>
+                        </div>
+                        <a asp-controller="Order" asp-action="Checkout" class="btn btn-danger w-100 mt-3 py-2">
+                            Перейти к оформлению
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
 
-@if (!User.Identity.IsAuthenticated)
-{
-    <p>Пожалуйста, авторизуйтесь на сайте</p>
-}
-else if (Model.Items.Count == 0)
-{
-    <p>Корзина пуста</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Товар</th>
-                <th>Цена</th>
-                <th>Количество</th>
-                <th>Итого</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Items)
-            {
-                <tr>
-                    <td>@item.Product.Name</td>
-                    <td>@item.Quantity</td>
-                    <td>
-                        <a asp-action="RemoveFromCart" asp-route-id="@item.Id" class="btn btn-danger">Удалить</a>
-                    </td>
-                </tr>
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.plus-btn').click(function() {
+                var input = $(this).siblings('.quantity-input');
+                var value = parseInt(input.val()) + 1;
+                input.val(value);
+                updateQuantity(input);
+            });
+
+            $('.minus-btn').click(function() {
+                var input = $(this).siblings('.quantity-input');
+                var value = parseInt(input.val()) - 1;
+                if (value >= 1) {
+                    input.val(value);
+                    updateQuantity(input);
+                }
+            });
+
+            function updateQuantity(input) {
+                var itemId = input.data('id');
+                var quantity = input.val();
+
+                $.post('/Cart/UpdateQuantity', { id: itemId, quantity: quantity })
+                    .done(function() {
+                        location.reload();
+                    })
+                    .fail(function() {
+                        alert('Ошибка при обновлении количества');
+                    });
             }
-        </tbody>
-    </table>
-
-    <div class="text-end">
-        <h4>Общая сумма: @Model.Items.Sum(i => i.Quantity).ToString("C")</h4>
-        <a asp-controller="Order" asp-action="Checkout" class="btn btn-primary">Оформить заказ</a>
-    </div>
+        });
+    </script>
 }

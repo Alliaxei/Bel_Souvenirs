@@ -1,8 +1,72 @@
-﻿@model List<Product>
+﻿@model List<ProductViewModel>
 
 @{
     ViewData["Title"] = "Home Page";
 }
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Функция для обновления счетчика корзины
+            function updateCartCount(count) {
+                const $cartBadge = $('.cart-badge');
+                $cartBadge.text(count);
+
+                // Анимация
+                $cartBadge.addClass('animate__animated animate__bounce');
+                setTimeout(() => {
+                    $cartBadge.removeClass('animate__animated animate__bounce');
+                }, 500);
+
+                // Показываем/скрываем бейдж
+                if (count > 0) {
+                    $cartBadge.show();
+                } else {
+                    $cartBadge.hide();
+                }
+            }
+
+            // Обработчик для кнопок корзины
+            $(document).on('click', '.cart-button', function() {
+                const button = $(this);
+                const productId = button.data('product-id');
+                const isRemoveAction = button.hasClass('btn-danger');
+                const url = isRemoveAction ? '/Cart/RemoveFromCart' : '/Cart/AddToCart';
+
+                button.prop('disabled', true)
+                    .html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: { productId: productId },
+                    success: function(response) {
+                        if (response.success) {
+                            // Обновляем кнопку
+                            button.toggleClass('btn-danger btn-primary')
+                                .text(isRemoveAction ? 'Добавить в корзину' : 'Удалить из корзины');
+
+                            // Обновляем счетчик в layout
+                            updateCartCount(response.cartCount);
+                        }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 401) {
+                            window.location.href = '/Account/Login';
+                        } else {
+                            alert('Ошибка: ' + (xhr.responseJSON?.message || 'Операция не выполнена'));
+                        }
+                    },
+                    complete: function() {
+                        button.prop('disabled', false)
+                            .text(isRemoveAction ? 'Добавить в корзину' : 'Удалить из корзины');
+                    }
+                });
+            });
+        });
+    </script>
+}
+
 <div class="hero-section">
     @* Слайдер с популярными товарами *@
     <div id="mainCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
@@ -13,10 +77,10 @@
             @for (int i = 0; i < firstThree.Count; i++)
             {
                 <div class="carousel-item @(i == 0 ? "active" : "")">
-                    <img src="@firstThree[i].ImagePath" class="d-block w-100" style="height: 400px; object-fit: cover;">
+                    <img src="@firstThree[i].product.ImagePath" class="d-block w-100" style="height: 400px; object-fit: cover;">
                     <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded-3">
-                        <h3>@firstThree[i].Name</h3>
-                        <p>Всего за @firstThree[i].Price.ToString("C")</p>
+                        <h3>@firstThree[i].product.Name</h3>
+                        <p>Всего за @firstThree[i].product.Price.ToString("C")</p>
                         <a href="#" class="btn btn-success">Подробнее</a>
                     </div>
                 </div>
@@ -34,27 +98,20 @@
         <h2 class="text-center mb-4"><i class="fas fa-crown text-warning"></i> Хиты продаж</h2>
         <div class="row">
 
-            @* @foreach (var product in Model.Where(p => p.IsPopular).Take(4)) *@
-            @foreach(var product in Model)
+            @foreach(var _product in Model)
             {
                 <div class="col-md-3 mb-4">
                     <div class="card h-100 border-warning hover-shadow">
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                             Хит!
                         </span>
-                        <img src="@product.ImagePath" class="card-img-top" style="height: 200px; object-fit: cover;">
+                        <img src="@_product.product.ImagePath" class="card-img-top" style="height: 200px; object-fit: cover;">
                         <div class="card-body">
-                            <h5 class="card-title">@product.Name</h5>
-                            <p class="text-success fw-bold">@product.Price.ToString("C")</p>
-                            @* <button class="btn btn-outline-success w-100"> *@
-                            @*     <i class="fas fa-cart-plus"></i> В корзину *@
-                            @* </button> *@
-                            <form asp-controller="Cart" asp-action="AddToCart" method="post">
-                                <input type="hidden" name="productId" value="@product.Id"/>
-                                <button type="submit" class="btn btn-primary">
-                                    Добавить в корзину
-                                </button>
-                            </form>
+                            <h5 class="card-title">@_product.product.Name</h5>
+                            <p class="text-success fw-bold">@_product.product.Price.ToString("C")</p>
+                            <button class="btn @(_product.isInCart ? "btn-danger" : "btn-primary") cart-button" data-product-id="@_product.product.Id">
+                                @(_product.isInCart ? "Удалить из корзины" : "Добавить в корзину")
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -63,17 +120,21 @@
     </div>
     @* Основной список *@
     <div class="row">
-        @foreach (var product in Model)
+        @foreach (var _product in Model)
         {
             <div class="col-md-4 mb-4">
                 <div class="card h-100">
-                    @if(!string.IsNullOrEmpty(product.ImagePath))
+                    @if (!string.IsNullOrEmpty(_product.product.ImagePath))
                     {
-                        <img src="@product.ImagePath" class="card-img-top" alt="@product.Name"/>
+                        <img src="@_product.product.ImagePath" class="card-img-top" alt="@_product.product.Name" />
                     }
                     <div class="card-body">
-                        <h5 class="card-title">@product.Name</h5>
-                        <p class="card-text text-danger">@product.Price.ToString("C")</p>
+                        <h5 class="card-title">@_product.product.Name</h5>
+                        <p class="card-text text-danger">@_product.product.Price.ToString("C")</p>
+                        <button class="btn @(_product.isInCart ? "btn-danger" : "btn-primary") cart-button"
+                                data-product-id="@_product.product.Id">
+                            @(_product.isInCart ? "Удалить из корзины" : "Добавить в корзину")
+                        </button>
                     </div>
                 </div>
             </div>
