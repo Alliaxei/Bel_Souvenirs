@@ -16,7 +16,7 @@
 
         <div class="container">
             <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-                <i class="fas fa-flag-checkered me-2"></i>BelSouvenirs
+                <i class="fas"></i>BelSouvenirs
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
                 <span class="navbar-toggler-icon"></span>
@@ -128,5 +128,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    @await RenderSectionAsync("AdditionalScripts", required: false)
+
 </body>
 </html>

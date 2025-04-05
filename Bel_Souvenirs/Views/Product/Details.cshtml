@@ -1,5 +1,113 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model Bel_Souvenirs.ViewModels.ProductViewModel
+
 @{
+    ViewData["Title"] = Model.product.Name;
+}
+
+<div class="container py-4">
+    <div class="row g-4">
+        <!-- Изображение товара -->
+        <div class="col-md-6">
+            <img src="@Model.product.ImagePath"
+                 class="img-fluid rounded-3 shadow"
+                 alt="@Model.product.Name"
+                 style="max-height: 500px; width: 100%; object-fit: contain;">
+        </div>
+
+        <!-- Информация о товаре -->
+        <div class="col-md-6">
+            <h1 class="fw-bold mb-3">@Model.product.Name</h1>
+
+            <div class="d-flex align-items-center mb-3">
+                <span class="text-success fw-bold fs-4 me-3">@Model.product.Price.ToString("C")</span>
+                @if (Model.product.IsPopular)
+                {
+                    <span class="badge bg-warning text-dark fs-6">Хит продаж</span>
+                }
+            </div>
+
+            <!-- Кнопки действий -->
+            <div class="d-flex gap-2 mb-4">
+                <button class="btn @(Model.isInCart ? "btn-danger" : "btn-primary") px-4 py-2 cart-button"
+                        data-product-id="@Model.product.Id"
+                        style="min-width: 200px;">
+                    @(Model.isInCart ? "Удалить из корзины" : "Добавить в корзину")
+                </button>
+            </div>
+
+            <!-- Описание -->
+            <div class="mb-4">
+                <h4 class="mb-3">Описание</h4>
+                <p class="text-muted">@(Model.product.Description ?? "Описание отсутствует")</p>
+            </div>
+
+            <!-- Детали -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Детали</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item border-0 px-0 py-2">
+                            <strong>Категория:</strong> @Model.product.Category
+                        </li>
+                        <li class="list-group-item border-0 px-0 py-2">
+                            <strong>Дата добавления:</strong>
+                            @Model.product.CreatedDate?.ToString("dd.MM.yyyy")
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Похожие товары (можно добавить позже) -->
+    @* <div class="mt-5">
+        <h3 class="mb-4">Смотрите также</h3>
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+            Здесь будут похожие товары
+        </div>
+    </div> *@
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Обработчик для кнопки корзины
+            $('.cart-button').click(function() {
+                var button = $(this);
+                var productId = button.data('product-id');
+                var isRemoveAction = button.hasClass('btn-danger');
+                var url = isRemoveAction ? '/Cart/RemoveFromCart' : '/Cart/AddToCart';
+
+                button.prop('disabled', true)
+                    .html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: { productId: productId },
+                    success: function(response) {
+                        if (response.success) {
+                            // Обновляем состояние кнопки
+                            button.toggleClass('btn-danger btn-primary')
+                                .text(isRemoveAction ? 'Добавить в корзину' : 'Удалить из корзины');
+
+                            // Обновляем счетчик в шапке
+                            $('#cart-count').text(response.cartCount);
+                        }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 401) {
+                            window.location.href = '/Account/Login';
+                        } else {
+                            alert('Ошибка: ' + (xhr.responseJSON?.message || 'Не удалось выполнить операцию'));
+                        }
+                    },
+                    complete: function() {
+                        button.prop('disabled', false)
+                            .text(isRemoveAction ? 'Добавить в корзину' : 'Удалить из корзины');
+                    }
+                });
+            });
+        });
+    </script>
 }

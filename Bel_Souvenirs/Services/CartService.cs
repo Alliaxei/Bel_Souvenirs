@@ -1,5 +1,6 @@
 ﻿using Bel_Souvenirs.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.Serialization;
 using System.Security.Claims;
 
 namespace Bel_Souvenirs.Services
@@ -13,6 +14,15 @@ namespace Bel_Souvenirs.Services
         {
             _appDbContext = appDbContext;
             _httpContextAccessor = httpContextAccessor;
+        }
+
+
+        public async Task<Cart?> getCartAsync(string userId)
+        {
+            return await _appDbContext.Carts
+                .Include(c => c.Items)
+                .ThenInclude(i => i.Product)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
         }
 
         public async Task<int> GetCartItemsCountAsync()
@@ -73,6 +83,51 @@ namespace Bel_Souvenirs.Services
                 .ToListAsync();
         }
 
+        public async Task<bool> IsProductInCartAsync(int productId, string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+                return false;
 
+            return await _appDbContext.Carts
+                .Where (c => c.UserId == userId)
+                .SelectMany(c => c.Items)
+                .AnyAsync(i => i.ProductId == productId);
+        }
+
+        public async Task<bool> RemoveItemAsync(int itemId, string userId)
+        {
+            if (string.IsNullOrEmpty (userId))
+                return false;
+
+            var item = await _appDbContext.CartItems
+                .Include(ci => ci.Cart)
+                .FirstOrDefaultAsync(ci => ci.Id == itemId && ci.Cart.UserId == userId);
+
+            if (item == null)
+                return false;
+
+            _appDbContext.CartItems.Remove(item);
+            await _appDbContext.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> UpdateQuantityAsync(int itemId, int quantity, string userId)
+        {
+            if (quantity <= 0)
+                return false;
+
+            var cart = await _appDbContext.Carts
+                .Include(c => c.Items)
+                .ThenInclude(i => i.Product)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+
+            var item = cart?.Items?.FirstOrDefault(i => i.Id == itemId);
+            if (item == null)
+                return false;
+            item.Quantity = quantity;
+            await _appDbContext.SaveChangesAsync();
+            return true;
+        }
     }
 }

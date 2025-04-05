@@ -57,10 +57,13 @@
                                             <small class="text-muted">@item.Product.Price.ToString("C") за шт.</small>
                                         </div>
                                         <div class="col-1 text-end">
-                                            <a asp-action="RemoveFromCart" asp-route-id="@item.Id"
-                                               class="btn btn-link text-danger" title="Удалить">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
+                                            <button class="cart-delete-btn remove-from-cart-btn"
+                                                    data-item-id="@item.Id"
+                                                    title="Удалить из корзины">
+                                                <svg class="trash-icon" viewBox="0 0 24 24">
+                                                    <path fill="currentColor" d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z" />
+                                                </svg>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -100,36 +103,5 @@
 </div>
 
 @section Scripts {
-    <script>
-        $(document).ready(function() {
-            $('.plus-btn').click(function() {
-                var input = $(this).siblings('.quantity-input');
-                var value = parseInt(input.val()) + 1;
-                input.val(value);
-                updateQuantity(input);
-            });
-
-            $('.minus-btn').click(function() {
-                var input = $(this).siblings('.quantity-input');
-                var value = parseInt(input.val()) - 1;
-                if (value >= 1) {
-                    input.val(value);
-                    updateQuantity(input);
-                }
-            });
-
-            function updateQuantity(input) {
-                var itemId = input.data('id');
-                var quantity = input.val();
-
-                $.post('/Cart/UpdateQuantity', { id: itemId, quantity: quantity })
-                    .done(function() {
-                        location.reload();
-                    })
-                    .fail(function() {
-                        alert('Ошибка при обновлении количества');
-                    });
-            }
-        });
-    </script>
+    <script src="~/js/cart.js"></script>
 }
