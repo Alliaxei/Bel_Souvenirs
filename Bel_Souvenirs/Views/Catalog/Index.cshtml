@@ -1,6 +1,9 @@
-﻿@model List<Bel_Souvenirs.Models.Product>
+﻿@model List<ProductViewModel>
 @{
     ViewData["Title"] = "Каталог товаров";
+}
+@section Scripts {
+    <script src="~/js/cart.js"></script>
 }
 
 <div class="container mt-4">
@@ -65,20 +68,21 @@
             @if (Model != null && Model.Any())
             {
                 <div class="row">
-                    @foreach (var product in Model)
+                    @foreach (var _product in Model)
                     {
                         <div class="col-md-4 mb-4">
                             <div class="card h-100">
-                                <img src="@product.ImagePath" class="card-img-top" alt="@product.Name"
+                                <img src="@_product.product.ImagePath" class="card-img-top" alt="@_product.product.Name"
                                      style="height: 200px; object-fit: cover;">
                                 <div class="card-body">
-                                    <h5 class="card-title">@product.Name</h5>
-                                    <p class="card-text">@product.Description</p>
-                                    <p class="text-success fw-bold">@product.Price.ToString("C")</p>
+                                    <h5 class="card-title">@_product.product.Name</h5>
+                                    <p class="card-text">@_product.product.Description</p>
+                                    <p class="text-success fw-bold">@_product.product.Price.ToString("C")</p>
                                 </div>
-                                <div class="card-footer bg-transparent">
-                                    <button class="btn btn-success w-100">В корзину</button>
-                                </div>
+                                <button class="btn @(_product.isInCart ? "btn-danger" : "btn-primary") cart-button"
+                                        data-product-id="@_product.product.Id">
+                                    @(_product.isInCart ? "Удалить из корзины" : "Добавить в корзину")
+                                </button>
                             </div>
                         </div>
                     }

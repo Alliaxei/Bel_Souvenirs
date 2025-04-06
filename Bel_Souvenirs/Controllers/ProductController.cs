@@ -29,6 +29,8 @@ namespace Bel_Souvenirs.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isInCart = userId != null && await _cartService.IsProductInCartAsync(id, userId);
 
+            ViewBag.CartItemCount = await _cartService.GetCartItemsCountAsync();
+
             return View(new ProductViewModel 
             {
                 product = product,

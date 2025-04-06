@@ -4,6 +4,10 @@
     ViewData["Title"] = Model.product.Name;
 }
 
+@section Scripts {
+    <script src="~/js/cart.js"></script>
+}
+
 <div class="container py-4">
     <div class="row g-4">
         <!-- Изображение товара -->
@@ -67,47 +71,3 @@
         </div>
     </div> *@
 </div>
-
-@section Scripts {
-    <script>
-        $(document).ready(function() {
-            // Обработчик для кнопки корзины
-            $('.cart-button').click(function() {
-                var button = $(this);
-                var productId = button.data('product-id');
-                var isRemoveAction = button.hasClass('btn-danger');
-                var url = isRemoveAction ? '/Cart/RemoveFromCart' : '/Cart/AddToCart';
-
-                button.prop('disabled', true)
-                    .html('<span class="spinner-border spinner-border-sm" role="status"></span>');
-
-                $.ajax({
-                    url: url,
-                    type: 'POST',
-                    data: { productId: productId },
-                    success: function(response) {
-                        if (response.success) {
-                            // Обновляем состояние кнопки
-                            button.toggleClass('btn-danger btn-primary')
-                                .text(isRemoveAction ? 'Добавить в корзину' : 'Удалить из корзины');
-
-                            // Обновляем счетчик в шапке
-                            $('#cart-count').text(response.cartCount);
-                        }
-                    },
-                    error: function(xhr) {
-                        if (xhr.status === 401) {
-                            window.location.href = '/Account/Login';
-                        } else {
-                            alert('Ошибка: ' + (xhr.responseJSON?.message || 'Не удалось выполнить операцию'));
-                        }
-                    },
-                    complete: function() {
-                        button.prop('disabled', false)
-                            .text(isRemoveAction ? 'Добавить в корзину' : 'Удалить из корзины');
-                    }
-                });
-            });
-        });
-    </script>
-}
