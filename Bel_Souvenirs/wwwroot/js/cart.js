@@ -27,34 +27,66 @@ function handleCartError(xhr) {
 
 // Добавление/удаление товара (кнопки на главной странице)
 $(document).on('click', '.cart-button', function (e) {
+    console.log("Вызов метода");
     e.preventDefault();
     e.stopPropagation();
 
     const button = $(this);
     const productId = button.data('product-id');
     const isRemoveAction = button.hasClass('btn-danger');
-    const url = isRemoveAction ? '/Cart/RemoveFromCart' : '/Cart/AddToCart';
+ 
 
-    button.prop('disabled', true)
-        .html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+  
+    
+    if (isRemoveAction) {
+        performCartAction();
+        return;
+    }
 
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: { productId: productId },
-        success: function (response) {
-            if (response.success) {
-                button.toggleClass('btn-danger btn-primary')
-                    .text(isRemoveAction ? 'Добавить в корзину' : 'Удалить из корзины');
-                updateCartCount(response.cartCount);
+    $.get('/Account/IsAuthenticated')
+        .done(function (isAuth) {
+            console.log("Проверка авторизации");
+            if (!isAuth) {
+                console.log("Не авторизован");
+                $('#authRequiredModal').modal('show');
+            } else {
+                console.log("Авторизован");
+                performCartAction();
             }
-        },
-        error: handleCartError,
-        complete: function () {
-            button.prop('disabled', false)
-                .text(isRemoveAction ? 'Добавить в корзину' : 'Удалить из корзины');
-        }
-    });
+        })
+
+    function performCartAction() {
+        button.prop('disabled', true)
+            .html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+        const url = isRemoveAction ? '/Cart/RemoveFromCart' : '/Cart/AddToCart';
+
+        button.prop('disabled', true)
+            .html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { productId: productId },
+            success: function (response) {
+                if (response.success) {
+                    button.toggleClass('btn-danger btn-primary')
+                        .text(isRemoveAction ? 'Добавить в корзину' : 'Удалить из корзины');
+                    updateCartCount(response.cartCount);
+                }
+            },
+            error: function (xhr) {
+                if (xhr.status === 401) {
+                    $('#authRequiredModal').modal('show');
+                } else {
+                    alert('Ошибка: ' + (xhr.responseJSON?.message || 'Операция не выполнена'));
+                }
+            },
+            complete: function () {
+                button.prop('disabled', false)
+                    .text(isRemoveAction ? 'Добавить в корзину' : 'Удалить из корзины');
+            }
+        });
+    }
 });
 
 // Удаление товара из корзины (страница корзины)

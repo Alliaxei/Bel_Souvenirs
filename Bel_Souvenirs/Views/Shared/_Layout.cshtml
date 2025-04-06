@@ -79,7 +79,7 @@
                     }
                     else
                     {
-                        <a class="brn btn-primary" asp-controller="Account" asp-action="Login">
+                        <a class="btn btn-primary" asp-controller="Account" asp-action="Login">
                             Войти
                         </a>
                     }
@@ -130,5 +130,24 @@
     @await RenderSectionAsync("Scripts", required: false)
     @await RenderSectionAsync("AdditionalScripts", required: false)
 
+
+    @* Модальное окно для неавторизованных пользователей *@
+    <div class="modal fade" id="authRequiredModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Требуется авторизация</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Чтобы добавлять товары в корзину, пожалуйста, авторизуйтесь.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Позже</button>
+                    <a href="/Account/Login" class="btn btn-primary">Войти</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

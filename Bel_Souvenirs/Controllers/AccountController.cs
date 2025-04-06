@@ -108,5 +108,11 @@ namespace Bel_Souvenirs.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+        public async Task<IActionResult> IsAuthenticated()
+        {
+            return Json(User.Identity.IsAuthenticated);
+
+        }
     }
 }
