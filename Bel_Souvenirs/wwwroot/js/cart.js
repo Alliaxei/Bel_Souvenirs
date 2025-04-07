@@ -1,5 +1,4 @@
-// ========== Общие функции ========== //
-
+//Общие
 function updateCartCount(count) {
     const $cartBadge = $('.cart-badge');
     $cartBadge.text(count);
@@ -25,7 +24,7 @@ function handleCartError(xhr) {
 
 // ========== Обработчики событий ========== //
 
-// Добавление/удаление товара (кнопки на главной странице)
+// Добавление/удаление товара
 $(document).on('click', '.cart-button', function (e) {
     console.log("Вызов метода");
     e.preventDefault();
@@ -131,6 +130,7 @@ $(document).on('click', '.remove-from-cart-btn', function (e) {
 });
 
 $(document).on('click', '.plus-btn, .minus-btn', function () {
+
     const input = $(this).siblings('.quantity-input');
     let value = parseInt(input.val());
 

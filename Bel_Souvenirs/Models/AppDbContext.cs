@@ -34,11 +34,6 @@ namespace Bel_Souvenirs.Models
                 .HasOne(i => i.Product)
                 .WithMany(p => p.CartItems)
                 .HasForeignKey(i => i.ProductId);
-
-
         }
-
-
-
     }
 }

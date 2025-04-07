@@ -5,7 +5,7 @@
 }
 
 <div class="container mt-4">
-    @if (!User.Identity.IsAuthenticated)
+    @if (!(User.Identity?.IsAuthenticated ?? false))
     {
         <div class="alert alert-warning">
             <h4>Пожалуйста, авторизуйтесь на сайте</h4>

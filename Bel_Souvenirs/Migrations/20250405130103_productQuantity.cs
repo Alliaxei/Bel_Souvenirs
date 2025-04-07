@@ -17,6 +17,7 @@ namespace Bel_Souvenirs.Migrations
                 nullable: true);
         }
 
+
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {

@@ -5,7 +5,7 @@
 }
 
 <div class="container mt-4">
-    <div class="row">
+    <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card-account">
                 <div class="card-header bg-success text-white">
@@ -44,45 +44,8 @@
                             <input asp-for="PhoneNumber" class="form-control" />
                             <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                         </div>
-                        
-                        @* <div class="form-group mb-3"> *@
-                        @*     <label asp-for="DeliveryAddress" class="form-label"></label> *@
-                        @*     <textarea asp-for="DeliveryAddress" class="form-control" rows="3"></textarea> *@
-                        @*     <span asp-validation-for="DeliveryAddress" class="text-danger"></span> *@
-                        @* </div> *@
-                        
                         <button type="submit" class="btn btn-success">Сохранить изменения</button>
                     </form>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-6">
-            <div class="card-account">
-                <div class="card-header bg-primary text-white">
-                    <h3>Мои заказы</h3>
-                </div>
-                <div class="card-body">
-                    @if (ViewBag.Orders != null && ViewBag.Orders.Count > 0)
-                    {
-                        <div class="list-group">
-                            @foreach (var order in ViewBag.Orders)
-                            {
-                                <a href="#" class="list-group-item list-group-item-action">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">Заказ #@order.Id</h5>
-                                        <small>@order.OrderDate.ToString("dd.MM.yyyy")</small>
-                                    </div>
-                                    <p class="mb-1">@order.Total.ToString("C")</p>
-                                    <small>Статус: @order.Status</small>
-                                </a>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <p>У вас пока нет заказов</p>
-                    }
                 </div>
             </div>
         </div>

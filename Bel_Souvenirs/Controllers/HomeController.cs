@@ -22,7 +22,10 @@ namespace Bel_Souvenirs.Controllers
         public async Task<IActionResult> Index([FromServices] CartService cartService)
         {
             var products = _appDbContext.Products.ToList();
-            var userId = User.Identity.IsAuthenticated ? User.FindFirstValue(ClaimTypes.NameIdentifier) : null;
+
+
+
+            var userId = User.Identity?.IsAuthenticated ?? false ? User.FindFirstValue(ClaimTypes.NameIdentifier) : null;
 
             ViewBag.CartItemCount = await cartService.GetCartItemsCountAsync();
             

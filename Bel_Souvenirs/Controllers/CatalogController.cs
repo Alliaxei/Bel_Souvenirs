@@ -9,15 +9,11 @@ using System.Security.Claims;
 
 namespace Bel_Souvenirs.Controllers
 {
-    public class CatalogController : Controller
+    public class CatalogController(AppDbContext dbContext, CartService cartService) : Controller
     {
-        private readonly AppDbContext _dbContext;
-        private readonly CartService _cartService;
-        public CatalogController(AppDbContext dbContext, CartService cartService)
-        {
-            _dbContext = dbContext;
-            _cartService = cartService;
-        }
+        private readonly AppDbContext _dbContext = dbContext;
+        private readonly CartService _cartService = cartService;
+
         public async Task<IActionResult> Index(
             string searchString, 
             string category, 
@@ -32,37 +28,29 @@ namespace Bel_Souvenirs.Controllers
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                products = products.Where(p => p.Name.Contains(searchString)
-                        || p.Description.Contains(searchString));
+                products = products.Where(p => 
+                    p.Name!.Contains(searchString) ||
+                    p.Description!.Contains(searchString));
             }
             if (!string.IsNullOrEmpty(category))
             {
                 products = products.Where(p => p.Category == category);
             }
 
-            switch (sortOrder)
+            products = sortOrder switch
             {
-                case "name_desc":
-                    products = products.OrderByDescending(p => p.Name);
-                    break;
-                case "Price":
-                    products = products.OrderBy(p => p.Price);
-                    break;
-                case "price_desc":
-                    products = products.OrderByDescending(p => p.Price);
-                    break;
-                default:
-                    products = products.OrderBy(p => p.Name);
-                    break;
-            }
-
+                "name_desc" => products.OrderByDescending(p => p.Name),
+                "Price" => products.OrderBy(p => p.Price),
+                "price_desc" => products.OrderByDescending(p => p.Price),
+                _ => products.OrderBy(p => p.Name),
+            };
             ViewBag.CartItemCount = await _cartService.GetCartItemsCountAsync();
 
             var filteredProducts = await products.ToListAsync();
 
-            var userId = User.Identity.IsAuthenticated ? User.FindFirstValue(ClaimTypes.NameIdentifier) : null;
+            var userId = User.Identity?.IsAuthenticated ?? false ? User.FindFirstValue(ClaimTypes.NameIdentifier) : null;
             var productIds = userId != null ?
-                await _cartService.GetCartItemsIdsAsync(userId) : new List<int>();
+                await _cartService.GetCartItemsIdsAsync(userId) : [];
 
 
             var productsModel = filteredProducts.Select(p => new ProductViewModel

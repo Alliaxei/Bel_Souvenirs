@@ -3,7 +3,6 @@ using Bel_Souvenirs.Services;
 using Bel_Souvenirs.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Net;
 using System.Security.Claims;
 
@@ -176,9 +175,9 @@ namespace Bel_Souvenirs.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public async Task<IActionResult> IsAuthenticated()
+        public IActionResult IsAuthenticated()
         {
-            return Json(User.Identity.IsAuthenticated);
+            return Json(User.Identity?.IsAuthenticated ?? false);
 
         }
 

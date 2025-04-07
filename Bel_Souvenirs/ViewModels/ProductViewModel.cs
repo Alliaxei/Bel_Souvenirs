@@ -4,7 +4,7 @@ namespace Bel_Souvenirs.ViewModels
 {
     public class ProductViewModel
     {
-        public Product product { get; set; }
+        public Product product { get; set; } = null!;
         public bool isInCart { get; set; }
     }
 }

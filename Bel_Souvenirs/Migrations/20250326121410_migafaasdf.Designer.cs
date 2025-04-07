@@ -13,7 +13,9 @@ namespace Bel_Souvenirs.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20250326121410_migafaasdf")]
+#pragma warning disable CS8981 // Имя типа содержит только строчные символы ASCII. Такие имена могут резервироваться для языка.
     partial class migafaasdf
+#pragma warning restore CS8981 // Имя типа содержит только строчные символы ASCII. Такие имена могут резервироваться для языка.
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

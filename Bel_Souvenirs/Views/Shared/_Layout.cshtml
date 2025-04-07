@@ -54,7 +54,8 @@
                     </a>
                  
 
-                    @if (User.Identity.IsAuthenticated)
+
+                    @if (User.Identity?.IsAuthenticated ?? false)
                     {
                         <div class="dropdown">
                             <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
