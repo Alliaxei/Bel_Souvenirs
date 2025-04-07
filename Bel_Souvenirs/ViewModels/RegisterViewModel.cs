@@ -10,7 +10,7 @@ namespace Bel_Souvenirs.ViewModels
 
         [Required(ErrorMessage = "Имя пользователя обязательно")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Минимальная длина - 3 символа")]
-        public string UserName { get; set; } = null!;
+        public string FullName { get; set; } = null!;
 
         [Required]
         [DataType(DataType.Password)]

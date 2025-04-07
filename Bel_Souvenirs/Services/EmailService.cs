@@ -28,9 +28,6 @@ namespace Bel_Souvenirs.Services
             await smtp.AuthenticateAsync(smtpUser, smtpPassword);
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
-
-
         }
-
     }
 }

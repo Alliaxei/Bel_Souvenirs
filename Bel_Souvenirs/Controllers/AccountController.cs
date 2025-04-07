@@ -10,24 +10,26 @@ namespace Bel_Souvenirs.Controllers
 {
     public class AccountController : Controller
     {
+
+        private readonly IUserService _userService;
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly AppDbContext _appDbContext;
         private readonly CartService _cartService;
         private readonly EmailService _emailService;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            AppDbContext appDbContext,
             CartService cartService,
-            EmailService emailService)
+            EmailService emailService,
+            IUserService userService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _appDbContext = appDbContext;
             _cartService = cartService;
             _emailService = emailService;
+            _userService = userService;
         }
 
         public IActionResult Index()
@@ -58,28 +60,21 @@ namespace Bel_Souvenirs.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser
-                {
-                    UserName = model.UserName,
-                    Email = model.Email,
-                    FullName = "",
-                };
-
-                var result = await _userManager.CreateAsync(user, model.Password);
+                var result = await _userService.RegisterUserAsync(model);
 
                 if (result.Succeeded)
                 {
-                    var cart = new Cart
+
+                    var user = await _userService.GetUserByEmailAsync(model.Email);
+
+                    if (user is not ApplicationUser appUser)
                     {
-                        UserId = user.Id,
+                        ModelState.AddModelError(String.Empty, "Ошибка при получении пользователя.");
+                        return View(model);
+                    }
 
-                        Items = new List<CartItem>()
-                    };
+                    var token = await _userService.GenerateEmailConfirmationTokenAsync(appUser);
 
-                    _appDbContext.Carts.Add(cart);
-                    await _appDbContext.SaveChangesAsync();
-
-                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
                     var confirmationUrl = Url.Action("ConfirmEmail",
                         "Account",
@@ -91,7 +86,7 @@ namespace Bel_Souvenirs.Controllers
                                        $"<p>Пожалуйста, подтвердите вашу почту, перейдя по ссылке:</p>" +
                                        $"<p><a href='{confirmationUrl}'>Подтвердить email</a></p>";
 
-                    await _emailService.SendEmailAsync(user.Email, subject, body);
+                    await _emailService.SendEmailAsync(appUser.Email ?? "", subject, body);
 
                     return RedirectToAction("EmailConfirmationSent");
                 }
@@ -112,13 +107,9 @@ namespace Bel_Souvenirs.Controllers
             if (userId == null || token == null)
                 return BadRequest("Некорректная ссылка");
 
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-                return NotFound("Пользователь не найден");
-
             token = WebUtility.UrlDecode(token);
 
-            var result = await _userManager.ConfirmEmailAsync(user, token);
+            var result = await _userService.ConfirmEmailAsync(userId, token);
             if (result.Succeeded)
                 return View("EmailConfirmed");
 
@@ -190,8 +181,9 @@ namespace Bel_Souvenirs.Controllers
             
             var user = await _userManager.FindByIdAsync(userId);
 
-
+            ViewBag.FullName = user?.FullName;
             ViewBag.CartItemCount = await _cartService.GetCartItemsCountAsync();
+
             return View("UserProfile", user);
         }
     }

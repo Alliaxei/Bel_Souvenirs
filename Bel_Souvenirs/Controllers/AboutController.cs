@@ -9,7 +9,6 @@ namespace Bel_Souvenirs.Controllers
         {
             ViewBag.CartItemCount = await cartService.GetCartItemsCountAsync();
 
-
             return View();
         }
     }

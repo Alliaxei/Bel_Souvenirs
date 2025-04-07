@@ -16,7 +16,6 @@ namespace Bel_Souvenirs.Services
                 .ThenInclude(i => i.Product)
                 .FirstOrDefaultAsync(c => c.UserId == userId);
         }
-
         public async Task<int> GetCartItemsCountAsync()
         {
             var userId = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -30,7 +29,6 @@ namespace Bel_Souvenirs.Services
                 .Where(ci => ci.Cart.UserId == userId)
                 .SumAsync(ci => ci.Quantity);
         }
-
         public async Task<bool> AddToCartAsync(int productId, string userId)
         {
             var cart = await _appDbContext.Carts
@@ -47,7 +45,6 @@ namespace Bel_Souvenirs.Services
 
             return true;
         }
-
         public async Task<bool> DeleteFromCartAsync(int productId, string userId)
         {
             if (userId == null)
@@ -77,7 +74,6 @@ namespace Bel_Souvenirs.Services
                 .SelectMany(c => c.Items.Select(i => i.ProductId))
                 .ToListAsync();
         }
-
         public async Task<bool> IsProductInCartAsync(int productId, string userId)
         {
             if (string.IsNullOrEmpty(userId))
@@ -88,7 +84,6 @@ namespace Bel_Souvenirs.Services
                 .SelectMany(c => c.Items)
                 .AnyAsync(i => i.ProductId == productId);
         }
-
         public async Task<bool> RemoveItemAsync(int itemId, string userId)
         {
             if (string.IsNullOrEmpty (userId))
@@ -107,7 +102,6 @@ namespace Bel_Souvenirs.Services
 
             return true;
         }
-
         public async Task<bool> UpdateQuantityAsync(int itemId, int quantity, string userId)
         {
             if (quantity <= 0)

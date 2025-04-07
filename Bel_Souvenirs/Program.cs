@@ -18,6 +18,8 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddTransient<EmailService>();
 
+builder.Services.AddScoped<IUserService, UserService>();
+
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
