@@ -8,29 +8,19 @@ using System.Security.Claims;
 
 namespace Bel_Souvenirs.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController(
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
+        CartService cartService,
+        EmailService emailService,
+        IUserService userService) : BaseController(cartService)
     {
 
-        private readonly IUserService _userService;
+        private readonly IUserService _userService = userService;
 
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly CartService _cartService;
-        private readonly EmailService _emailService;
-
-        public AccountController(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            CartService cartService,
-            EmailService emailService,
-            IUserService userService)
-        {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _cartService = cartService;
-            _emailService = emailService;
-            _userService = userService;
-        }
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
+        private readonly EmailService _emailService = emailService;
 
         public IActionResult Index()
         {
@@ -181,7 +171,6 @@ namespace Bel_Souvenirs.Controllers
             
             var user = await _userManager.FindByIdAsync(userId);
 
-            ViewBag.FullName = user?.FullName;
             ViewBag.CartItemCount = await _cartService.GetCartItemsCountAsync();
 
             return View("UserProfile", user);

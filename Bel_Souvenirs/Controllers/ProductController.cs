@@ -7,18 +7,9 @@ using System.Security.Claims;
 
 namespace Bel_Souvenirs.Controllers
 {
-    public class ProductController : Controller
+    public class ProductController(AppDbContext context, CartService cartService) : BaseController(cartService)
     {
-        private readonly ILogger<ProductController> _logger;
-        private readonly AppDbContext _context;
-        private readonly CartService _cartService;
-
-        public ProductController(AppDbContext context, CartService cartService, ILogger<ProductController> logger)
-        {
-            _context = context;
-            _cartService = cartService;
-            _logger = logger;
-        }
+        private readonly AppDbContext _context = context;
 
         public async Task<IActionResult> Details(int id)
         {
@@ -29,17 +20,13 @@ namespace Bel_Souvenirs.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isInCart = userId != null && await _cartService.IsProductInCartAsync(id, userId);
 
-            ViewBag.CartItemCount = await _cartService.GetCartItemsCountAsync();
 
             return View(new ProductViewModel 
             {
-                product = product,
-                isInCart = isInCart
+                Product = product,
+                IsInCart = isInCart
             });
          }
-
-
-
 
         public IActionResult Index()
         {

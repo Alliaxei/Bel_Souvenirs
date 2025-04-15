@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - BelSouvenirs | Белорусские сувениры</title>
+    <title>@ViewData["Title"] - BelTech | Белорусские сувениры</title>
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -16,7 +16,7 @@
 
         <div class="container">
             <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-                <i class="fas"></i>BelSouvenirs
+                <i class="fas"></i>BelTech
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
                 <span class="navbar-toggler-icon"></span>
@@ -39,7 +39,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Home" asp-action="Contacts">
+                        <a class="nav-link" asp-controller="Contacts" asp-action="Index">
                             <i class="fas fa-map-marker-alt me-1"></i>Контакты
                         </a>
                     </li>
@@ -59,7 +59,8 @@
                     {
                         <div class="dropdown">
                             <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle me-1"></i>@ViewBag.FullName
+                                <i class="fas fa-user-circle me-1"></i>
+                                @ViewBag.FullName
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
@@ -93,19 +94,18 @@
         @RenderBody()
     </main>
 
-    <!-- Футер -->
     <footer class="bg-success text-white py-4 mt-auto">
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
                     <h5>BelSouvenirs</h5>
-                    <p>Настоящие белорусские сувениры ручной работы</p>
+                    <p>Магазин №1 белорусской техники</p>
                 </div>
                 <div class="col-md-4">
                     <h5>Контакты</h5>
                     <ul class="list-unstyled">
                         <li><i class="fas fa-phone me-2"></i>+375 (29) 123-45-67</li>
-                        <li><i class="fas fa-envelope me-2"></i>info@belsouvenirs.by</li>
+                        <li><i class="fas fa-envelope me-2"></i>info@beltec.by</li>
                     </ul>
                 </div>
                 <div class="col-md-4">
@@ -113,13 +113,12 @@
                     <div class="social-links">
                         <a href="#" class="text-white me-2"><i class="fab fa-instagram fa-lg"></i></a>
                         <a href="#" class="text-white me-2"><i class="fab fa-telegram fa-lg"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-vk fa-lg"></i></a>
                     </div>
                 </div>
             </div>
             <hr class="bg-light">
             <div class="text-center">
-                &copy; 2025 BelSouvenirs. Все права защищены.
+                &copy; 2025 BelTech. Все права защищены.
             </div>
         </div>
     </footer>

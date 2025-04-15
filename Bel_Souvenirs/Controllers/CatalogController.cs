@@ -1,18 +1,15 @@
 ﻿using Bel_Souvenirs.Models;
 using Bel_Souvenirs.Services;
 using Bel_Souvenirs.ViewModels;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using System.Security.Claims;
 
 namespace Bel_Souvenirs.Controllers
 {
-    public class CatalogController(AppDbContext dbContext, CartService cartService) : Controller
+    public class CatalogController(AppDbContext dbContext, CartService cartService) : BaseController(cartService)
     {
         private readonly AppDbContext _dbContext = dbContext;
-        private readonly CartService _cartService = cartService;
 
         public async Task<IActionResult> Index(
             string searchString, 
@@ -55,8 +52,8 @@ namespace Bel_Souvenirs.Controllers
 
             var productsModel = filteredProducts.Select(p => new ProductViewModel
             {
-                product = p,
-                isInCart = productIds.Contains(p.Id)
+                Product = p,
+                IsInCart = productIds.Contains(p.Id)
             }).ToList();
 
             var categories = await _dbContext.Products

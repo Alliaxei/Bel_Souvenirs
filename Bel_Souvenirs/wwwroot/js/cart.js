@@ -69,7 +69,7 @@ $(document).on('click', '.cart-button', function (e) {
             success: function (response) {
                 if (response.success) {
                     button.toggleClass('btn-danger btn-primary')
-                        .text(isRemoveAction ? 'Добавить в корзину' : 'Удалить из корзины');
+                        .text(isRemoveAction ? 'В корзину' : 'Удалить');
                     updateCartCount(response.cartCount);
                 }
             },
@@ -82,7 +82,7 @@ $(document).on('click', '.cart-button', function (e) {
             },
             complete: function () {
                 button.prop('disabled', false)
-                    .text(isRemoveAction ? 'Добавить в корзину' : 'Удалить из корзины');
+                    .text(isRemoveAction ? 'В корзину' : 'Удалить');
             }
         });
     }

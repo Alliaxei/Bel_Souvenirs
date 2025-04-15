@@ -6,11 +6,10 @@ using System.Security.Claims;
 
 namespace Bel_Souvenirs.Controllers
 {
-    public class CartController(AppDbContext appDbContext, CartService cartService) : Controller
+    public class CartController(AppDbContext appDbContext, CartService cartService, IProductService productService) : BaseController(cartService)
     {
         private readonly AppDbContext _appDbContext = appDbContext;
-        private readonly CartService _cartService = cartService;
-
+        private readonly IProductService _productService = productService;
         public async Task<IActionResult> Index()
         {
 
@@ -22,7 +21,7 @@ namespace Bel_Souvenirs.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var cart = _appDbContext.Carts
-                .Include(c => c.Items) // Привязка товаров к корзине
+                .Include(c => c.Items)
                 .ThenInclude(i => i.Product)
                 .FirstOrDefault(c => c.UserId == userId);
 
@@ -47,7 +46,6 @@ namespace Bel_Souvenirs.Controllers
             var cartCount = await _cartService.GetCartItemsCountAsync();
             return Json(new { success = true, cartCount });
         }
-
 
         [HttpPost]
         public async Task<IActionResult> RemoveFromCart(int productId)
@@ -117,6 +115,42 @@ namespace Bel_Souvenirs.Controllers
                 totalItems = cart?.Items.Sum(i => i.Quantity)
             });
 
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Order(int id)
+        {
+            try
+            {
+                var product = await _productService.GetProductByIdAsync(id);
+
+                if (product == null)
+                {
+                    return Json(new { success = false, message = "Товар не найден" });
+                }
+
+                await _productService.UpdateAmountOfOrdersAsync(id);
+
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                
+                if(userId == null)
+                {
+                    return Json(new { success = false, message = "Необходима авторизация" });
+                }
+
+                await _cartService.DeleteFromCartAsync(id, userId);
+               
+                return Json(new {
+                        success = true,
+                        message = $"Заказ товара \"{product.Name}\" успешно оформлен!",
+                        productId = id
+                });
+            }
+            catch 
+            {
+                return Json(new { 
+                    success = false, message = "Ошибка при оформлении заказа." });
+            }
         }
     }
 }

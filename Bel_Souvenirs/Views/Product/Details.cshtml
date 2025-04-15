@@ -1,74 +1,90 @@
 ﻿@model Bel_Souvenirs.ViewModels.ProductViewModel
 
 @{
-    ViewData["Title"] = Model.product.Name;
+    ViewData["Title"] = Model.Product.Name;
 }
 
 @section Scripts {
     <script src="~/js/cart.js"></script>
+    <script src="~/js/modal.js"></script>
 }
 
 <div class="container py-4">
     <div class="row g-4">
-        <!-- Изображение товара -->
         <div class="col-md-6">
-            <img src="@Model.product.ImagePath"
+            <img src="@Model.Product.ImagePath"
                  class="img-fluid rounded-3 shadow"
-                 alt="@Model.product.Name"
+                 alt="@Model.Product.Name"
                  style="max-height: 500px; width: 100%; object-fit: contain;">
         </div>
-
-        <!-- Информация о товаре -->
         <div class="col-md-6">
-            <h1 class="fw-bold mb-3">@Model.product.Name</h1>
+            <h1 class="fw-bold mb-3">@Model.Product.Name</h1>
 
             <div class="d-flex align-items-center mb-3">
-                <span class="text-success fw-bold fs-4 me-3">@Model.product.Price.ToString("C")</span>
-                @if (Model.product.IsPopular)
+                <span class="text-success fw-bold fs-4 me-3">@Model.Product.Price.ToString("C")</span>
+                @if (Model.Product.IsPopular)
                 {
                     <span class="badge bg-warning text-dark fs-6">Хит продаж</span>
                 }
             </div>
 
-            <!-- Кнопки действий -->
             <div class="d-flex gap-2 mb-4">
-                <button class="btn @(Model.isInCart ? "btn-danger" : "btn-primary") px-4 py-2 cart-button"
-                        data-product-id="@Model.product.Id"
+                <button class="btn @(Model.IsInCart ? "btn-danger" : "btn-primary") px-4 py-2 cart-button"
+                        data-product-id="@Model.Product.Id"
                         style="min-width: 200px;">
-                    @(Model.isInCart ? "Удалить из корзины" : "Добавить в корзину")
+                    @(Model.IsInCart ? "Удалить" : "В корзину")
                 </button>
+
+                <form id="orderForm" asp-controller="Cart" asp-action="Order" method="post">
+                    <input type="hidden" name="id" value="@Model.Product.Id"/>
+                    <button type="submit" class="btn btn-success px-4 py-2" style="min-width: 200px;">
+                        Оформить заказ
+                    </button>
+                </form>
             </div>
 
-            <!-- Описание -->
             <div class="mb-4">
                 <h4 class="mb-3">Описание</h4>
-                <p class="text-muted">@(Model.product.Description ?? "Описание отсутствует")</p>
+                <p class="text-muted">@(Model.Product.Description ?? "Описание отсутствует")</p>
             </div>
 
-            <!-- Детали -->
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Детали</h5>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item border-0 px-0 py-2">
-                            <strong>Категория:</strong> @Model.product.Category
+                            <strong>Категория:</strong> @Model.Product.Category
                         </li>
                         <li class="list-group-item border-0 px-0 py-2">
-                            <strong>Дата добавления:</strong>
-                            @Model.product.CreatedDate?.ToString("dd.MM.yyyy")
+                            <strong>Бренд:</strong> @Model.Product.Brand
+                        </li>
+                        <li class="list-group-item border-0 px-0 py-2">
+                            <strong>Модель:</strong> @Model.Product.Model
+                        </li>
+                        <li class="list-group-item border-0 px-0 py-2">
+                            <strong>Количество заказов:</strong> @Model.Product.AmountOfOrders
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Похожие товары (можно добавить позже) -->
-    @* <div class="mt-5">
-        <h3 class="mb-4">Смотрите также</h3>
-        <div class="row row-cols-2 row-cols-md-4 g-3">
-            Здесь будут похожие товары
+    @* Модальное окно для успешной покупки *@
+    <div class="modal fade" id="orderSuccessModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Успешное оформление</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="successMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <a id="HomeLink" class="btn btn-primary" href="/">К покупкам</a>
+                </div>
+            </div>
         </div>
-    </div> *@
+    </div>
 </div>
-

@@ -7,13 +7,11 @@ namespace Bel_Souvenirs.Services
     public class CartService(AppDbContext appDbContext, IHttpContextAccessor httpContextAccessor)
     {
         private readonly AppDbContext _appDbContext = appDbContext;
-        private IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public async Task<Cart?> GetCartAsync(string userId)
         {
             return await _appDbContext.Carts
-                .Include(c => c.Items)
-                .ThenInclude(i => i.Product)
                 .FirstOrDefaultAsync(c => c.UserId == userId);
         }
         public async Task<int> GetCartItemsCountAsync()
@@ -108,8 +106,6 @@ namespace Bel_Souvenirs.Services
                 return false;
 
             var cart = await _appDbContext.Carts
-                .Include(c => c.Items)
-                .ThenInclude(i => i.Product)
                 .FirstOrDefaultAsync(c => c.UserId == userId);
 
             var item = cart?.Items?.FirstOrDefault(i => i.Id == itemId);
@@ -123,5 +119,6 @@ namespace Bel_Souvenirs.Services
 
             return true;
         }
+
     }
 }

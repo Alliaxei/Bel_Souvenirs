@@ -1,3 +1,4 @@
+using Bel_Souvenirs.MiddleWare;
 using Bel_Souvenirs.Models;
 using Bel_Souvenirs.Services;
 using Microsoft.AspNetCore.Identity;
@@ -6,9 +7,6 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
-
-
-
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseLazyLoadingProxies().UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -19,6 +17,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<EmailService>();
 
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddScoped<IProductService, ProductService>();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
@@ -32,10 +32,12 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
-builder.Services.AddControllersWithViews();
-
 
 var app = builder.Build();
+
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 
 if (!app.Environment.IsDevelopment())
@@ -47,9 +49,11 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+
 app.UseRouting();
 
-app.UseAuthorization();
+
+app.UseMiddleware<UserInfoMiddleware>();
 
 app.MapControllerRoute(
     name: "cart",

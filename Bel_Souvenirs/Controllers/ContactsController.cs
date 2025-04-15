@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Bel_Souvenirs.Controllers
 {
-    public class AboutController(CartService cartService) : BaseController(cartService)
+    public class ContactsController(CartService cartService) : BaseController(cartService)
     {
         public IActionResult Index()
         {

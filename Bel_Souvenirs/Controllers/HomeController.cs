@@ -7,39 +7,38 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Bel_Souvenirs.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(CartService cartService, IProductService productService) : BaseController(cartService)
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly AppDbContext _appDbContext;
-
-        public HomeController(ILogger<HomeController> logger, AppDbContext appDbContext)
-        {
-            _logger = logger;
-            _appDbContext = appDbContext;
-          
-        }
+        private readonly IProductService _productService = productService;
 
         public async Task<IActionResult> Index([FromServices] CartService cartService)
         {
-            var products = _appDbContext.Products.ToList();
-
-
+            var products = await _productService.GetAllProducts();
 
             var userId = User.Identity?.IsAuthenticated ?? false ? User.FindFirstValue(ClaimTypes.NameIdentifier) : null;
-
-            ViewBag.CartItemCount = await cartService.GetCartItemsCountAsync();
             
-            
-            var productIds = userId != null ? 
-                await cartService.GetCartItemsIdsAsync(userId) : new List<int>();
+            var productIds = userId != null 
+                ? await cartService.GetCartItemsIdsAsync(userId) 
+                : [];
 
-            var productsModel = products.Select(p => new ProductViewModel
+            var productsModel =  products.Select(p => new ProductViewModel
             {
-                product = p,
-                isInCart = productIds.Contains(p.Id)
+                Product = p,
+                IsInCart = productIds.Contains(p.Id)
             }).ToList();
 
-            return View(productsModel);
+            var topPopular = productsModel.
+                OrderByDescending(p => p.Product.AmountOfOrders)
+                .Take(4)
+                .ToList();
+
+            var model = new HomeViewModel
+            {
+                AllProducts = productsModel,
+                TopPopularProducts = topPopular
+            };
+
+            return View(model);
         }
 
         public IActionResult Privacy()

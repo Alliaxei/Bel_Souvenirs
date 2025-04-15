@@ -52,13 +52,6 @@
                            class="list-group-item list-group-item-action @(string.IsNullOrEmpty(ViewBag.CurrentCategory) ? "active" : "")">
                             Все категории
                         </a>
-                        @* @foreach (var category in ViewBag.Categories) *@
-                        @* { *@
-                        @*     <a asp-action="Index" asp-route-category="@category" *@
-                        @*        class="list-group-item list-group-item-action @(ViewBag.CurrentCategory == category ? "active" : "")"> *@
-                        @*         @category *@
-                        @*     </a> *@
-                        @* } *@
                     </div>
                 </div>
             </div>
@@ -72,16 +65,18 @@
                     {
                         <div class="col-md-4 mb-4">
                             <div class="card h-100">
-                                <img src="@_product.product.ImagePath" class="card-img-top" alt="@_product.product.Name"
-                                     style="height: 200px; object-fit: cover;">
+                                <a asp-controller="Product" asp-action="Details" asp-route-itemid="">
+                                    <img src="@_product.Product.ImagePath" class="card-img-top" alt="@_product.Product.Name"
+                                         style="height: 200px; object-fit: cover;">
+                                </a>
                                 <div class="card-body">
-                                    <h5 class="card-title">@_product.product.Name</h5>
-                                    <p class="card-text">@_product.product.Description</p>
-                                    <p class="text-success fw-bold">@_product.product.Price.ToString("C")</p>
+                                    <h5 class="card-title">@_product.Product.Name</h5>
+                                    <p class="card-text">@_product.Product.Description</p>
+                                    <p class="text-success fw-bold">@_product.Product.Price.ToString("C", new System.Globalization.CultureInfo("be-BY"))</p>
                                 </div>
-                                <button class="btn @(_product.isInCart ? "btn-danger" : "btn-primary") cart-button"
-                                        data-product-id="@_product.product.Id">
-                                    @(_product.isInCart ? "Удалить из корзины" : "Добавить в корзину")
+                                <button class="btn @(_product.IsInCart ? "btn-danger" : "btn-primary") cart-button"
+                                        data-product-id="@_product.Product.Id">
+                                    @(_product.IsInCart ? "Удалить" : "В корзину")
                                 </button>
                             </div>
                         </div>
