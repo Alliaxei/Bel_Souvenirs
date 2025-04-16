@@ -11,5 +11,6 @@ namespace Bel_Souvenirs.Services
         Task<IdentityUser?> GetUserByEmailAsync(string email);
         Task<string> GenerateEmailConfirmationTokenAsync(ApplicationUser user);
         Task<IdentityResult> ConfirmEmailAsync(string userId, string token);
+        Task UpdateFullNameAsync(string userId, string fullName);
     }
 }

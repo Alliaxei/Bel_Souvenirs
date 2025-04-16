@@ -7,43 +7,14 @@ using System.Security.Claims;
 
 namespace Bel_Souvenirs.Controllers
 {
-    public class CatalogController(AppDbContext dbContext, CartService cartService) : BaseController(cartService)
+    public class CatalogController(CartService cartService, IProductService productService) : BaseController(cartService)
     {
-        private readonly AppDbContext _dbContext = dbContext;
+        private readonly IProductService _productService = productService;
 
-        public async Task<IActionResult> Index(
-            string searchString, 
-            string category, 
-            string sortOrder)
+        public async Task<IActionResult> Index(string searchString, string category, string sortOrder)
         {
-            ViewData["CurrentSort"] = sortOrder;
-            ViewData["NameSort"] = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["PriceSort"] = sortOrder == "Price" ? "price_desc" : "Price";
 
-
-            var products = from p in _dbContext.Products select p;
-
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                products = products.Where(p => 
-                    p.Name!.Contains(searchString) ||
-                    p.Description!.Contains(searchString));
-            }
-            if (!string.IsNullOrEmpty(category))
-            {
-                products = products.Where(p => p.Category == category);
-            }
-
-            products = sortOrder switch
-            {
-                "name_desc" => products.OrderByDescending(p => p.Name),
-                "Price" => products.OrderBy(p => p.Price),
-                "price_desc" => products.OrderByDescending(p => p.Price),
-                _ => products.OrderBy(p => p.Name),
-            };
-            ViewBag.CartItemCount = await _cartService.GetCartItemsCountAsync();
-
-            var filteredProducts = await products.ToListAsync();
+            var filteredProducts = await _productService.GetFilteredProductsAsync(searchString, category, sortOrder);
 
             var userId = User.Identity?.IsAuthenticated ?? false ? User.FindFirstValue(ClaimTypes.NameIdentifier) : null;
             var productIds = userId != null ?
@@ -56,14 +27,11 @@ namespace Bel_Souvenirs.Controllers
                 IsInCart = productIds.Contains(p.Id)
             }).ToList();
 
-            var categories = await _dbContext.Products
-                .Select(p => p.Category)
-                .Distinct()
-                .ToListAsync();
-
-            ViewBag.Categories = categories;
-            ViewBag.CartItemCount = await _cartService.GetCartItemsCountAsync();
-
+            ViewBag.Categories = await _productService.GetCategoryNamesAsync();
+            ViewBag.CurrentCategory = category;
+            ViewBag.NameSort = sortOrder == "name_desc" ? "name" : "name_desc";
+            ViewBag.PriceSort = sortOrder == "price_desc" ? "price" : "price_desc";
+            ViewBag.PopularSort = sortOrder == "popular" ? null : "popular";
             return View(productsModel);
         }
     }

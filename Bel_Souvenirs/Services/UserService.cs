@@ -61,5 +61,19 @@ namespace Bel_Souvenirs.Services
             var decodedtoken = WebUtility.UrlDecode(token);
             return await _userManager.ConfirmEmailAsync(user, decodedtoken);
         }
+
+        public async Task UpdateFullNameAsync(string userId, string fullName)
+        {
+            var user = await _userManager.FindByIdAsync(userId) ?? throw new Exception("Пользователь не найден");
+            
+            user.FullName = fullName;
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                throw new Exception($"Ошибка при обновлении имени: {errors}");
+            }
+        }
     }
 }

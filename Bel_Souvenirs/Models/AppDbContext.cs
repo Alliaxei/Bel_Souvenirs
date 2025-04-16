@@ -34,6 +34,20 @@ namespace Bel_Souvenirs.Models
                 .HasOne(i => i.Product)
                 .WithMany(p => p.CartItems)
                 .HasForeignKey(i => i.ProductId);
+
+            //Review с Product 
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.Product)
+                .WithMany(p => p.Reviews)
+                .HasForeignKey(r => r.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //Review с User
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.User)
+                .WithMany(u => u.Reviews)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

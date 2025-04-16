@@ -162,6 +162,7 @@ namespace Bel_Souvenirs.Controllers
 
         }
 
+        [HttpGet]
         public async Task<IActionResult> Profile()
         {
 
@@ -169,11 +170,28 @@ namespace Bel_Souvenirs.Controllers
             if (userId == null)
                 return View("Error");
             
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId) ?? throw new Exception ("Ошибка, пользователь не найден");
 
-            ViewBag.CartItemCount = await _cartService.GetCartItemsCountAsync();
+            var viewModel = new UpdateUserViewModel { 
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email ?? "Email not found"
+            };
 
-            return View("UserProfile", user);
+            ViewBag.CartItemCount = await    _cartService.GetCartItemsCountAsync();
+
+            return View("UserProfile", viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Profile(UpdateUserViewModel model) 
+        {
+            if (!ModelState.IsValid) return View("UserProfile", model);
+
+            await _userService.UpdateFullNameAsync(model.Id, model.FullName);
+
+            TempData["SuccessMessage"] = "Имя успешно обновлено!";
+            return RedirectToAction(nameof(Profile));
         }
     }
 }

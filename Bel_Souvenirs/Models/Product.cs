@@ -1,4 +1,6 @@
-﻿namespace Bel_Souvenirs.Models
+﻿using System.ComponentModel;
+
+namespace Bel_Souvenirs.Models
 {
     public class Product
     {
@@ -6,7 +8,7 @@
         public string Name { get; set; } = null!;
         public string Brand { get; set; } = null!;
         public string Model { get; set; } = null!;
-
+        public double Rating { get; set; }
         public string? Description { get; set; }
         public decimal Price { get; set; }
         public string ImagePath { get; set; } = null!;
@@ -17,5 +19,6 @@
         public DateTime? CreatedDate { get; set; } = DateTime.UtcNow;
 
         public virtual List<CartItem> CartItems { get; set; } = null!;
+        public virtual ICollection<Review> Reviews { get; set; } = [];
     }
 }

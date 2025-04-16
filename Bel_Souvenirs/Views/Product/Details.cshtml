@@ -21,7 +21,7 @@
             <h1 class="fw-bold mb-3">@Model.Product.Name</h1>
 
             <div class="d-flex align-items-center mb-3">
-                <span class="text-success fw-bold fs-4 me-3">@Model.Product.Price.ToString("C")</span>
+                <span class="text-success fw-bold fs-4 me-3">@Model.Product.Price.ToString("C", new System.Globalization.CultureInfo("be-BY"))</span>
                 @if (Model.Product.IsPopular)
                 {
                     <span class="badge bg-warning text-dark fs-6">Хит продаж</span>
@@ -69,6 +69,7 @@
             </div>
         </div>
     </div>
+
     @* Модальное окно для успешной покупки *@
     <div class="modal fade" id="orderSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">

@@ -36,13 +36,14 @@
                                 <div class="list-group-item">
                                     <div class="row align-items-center">
                                         <div class="col-2">
-                                            <img src="@(item.Product.ImagePath ?? "Изображение не найдено")"
-                                                 alt="@item.Product.Name"
-                                                 class="img-fluid rounded">
+                                             <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Product.Id">
+                                                <img src="@(item.Product.ImagePath ?? "Изображение не найдено")"
+                                                     alt="@item.Product.Name"
+                                                     class="img-fluid rounded">
+                                             </a>
                                         </div>
                                         <div class="col-5">
                                             <h5 class="mb-1">@item.Product.Name</h5>
-                                            <small class="text-muted">Артикул: @item.Product.Id</small>
                                         </div>
                                         <div class="col-2">
                                             <div class="input-group">
@@ -53,8 +54,8 @@
                                             </div>
                                         </div>
                                         <div class="col-2 text-end">
-                                            <h5 class="mb-0">@((item.Quantity * item.Product.Price).ToString("C"))</h5>
-                                            <small class="text-muted">@item.Product.Price.ToString("C") за шт.</small>
+                                            <h5 class="mb-0">@((item.Quantity * item.Product.Price).ToString("C", new System.Globalization.CultureInfo("be-BY")))</h5>
+                                            <small class="text-muted">@item.Product.Price.ToString("C", new System.Globalization.CultureInfo("be-BY")) за шт.</small>
                                         </div>
                                         <div class="col-1 text-end">
                                             <button class="cart-delete-btn remove-from-cart-btn"
@@ -81,7 +82,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-2">
                             <span>Товары (@Model.Items.Sum(i => i.Quantity))</span>
-                            <span>@Model.Items.Sum(i => i.Quantity * i.Product.Price).ToString("C")</span>
+                            <span>@Model.Items.Sum(i => i.Quantity * i.Product.Price).ToString("C", new System.Globalization.CultureInfo("be-BY"))</span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Доставка</span>
@@ -90,7 +91,7 @@
                         <hr>
                         <div class="d-flex justify-content-between fw-bold fs-5">
                             <span>Итого</span>
-                            <span>@Model.Items.Sum(i => i.Quantity * i.Product.Price).ToString("C")</span>
+                            <span>@Model.Items.Sum(i => i.Quantity * i.Product.Price).ToString("C", new System.Globalization.CultureInfo("be-BY"))</span>
                         </div>
                         <a asp-controller="Order" asp-action="Checkout" class="btn btn-danger w-100 mt-3 py-2">
                             Перейти к оформлению

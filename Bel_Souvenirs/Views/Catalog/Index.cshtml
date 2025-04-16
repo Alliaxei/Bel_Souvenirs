@@ -12,7 +12,7 @@
             <form asp-action="Index" method="get" class="form-inline">
                 <div class="input-group w-100">
                     <input type="text" class="form-control" name="searchString"
-                           value="@ViewData["CurrentFilter"]" placeholder="Поиск товаров...">
+                           placeholder="Поиск товаров...">
                     <button class="btn btn-success" type="submit">
                         <i class="fas fa-search"></i>
                     </button>
@@ -32,7 +32,15 @@
                     </li>
                     <li>
                         <a class="dropdown-item" asp-action="Index"
-                           asp-route-sortOrder="@ViewData["PriceSort"]">По цене</a>
+                           asp-route-sortOrder="@ViewData["PriceSort"]">По цене вверх</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" asp-action="Index"
+                           asp-route-sortOrder="@ViewData["PriceSort"]">По цене вниз</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" asp-action="Index"
+                           asp-route-sortOrder="@ViewData["PopularSort"]">Сначала популярные</a>
                     </li>
                 </ul>
             </div>
@@ -48,14 +56,22 @@
                 <div class="card-body">
                     <h5 class="card-title">Категории</h5>
                     <div class="list-group">
-                        <a asp-action="Index"
-                           class="list-group-item list-group-item-action @(string.IsNullOrEmpty(ViewBag.CurrentCategory) ? "active" : "")">
-                            Все категории
-                        </a>
+                        @foreach (var cat in ViewBag.Categories as List<string> ?? [])
+                        {
+                            <a asp-action="Index"
+                               asp-route-category="@cat"
+                               class="list-group-item list-group-item-action @(ViewBag.CurrentCategory == cat ? "active" : "")">
+                                @cat
+                            </a>
+                        }
                     </div>
                 </div>
+                <a asp-action="Index" class="btn btn-outline-secondary mt-3 w-100">
+                    <i class="fas fa-sync-alt"></i> Сбросить фильтры
+                </a>
             </div>
         </div>
+     
 
         <div class="col-md-9">
             @if (Model != null && Model.Any())
@@ -65,7 +81,7 @@
                     {
                         <div class="col-md-4 mb-4">
                             <div class="card h-100">
-                                <a asp-controller="Product" asp-action="Details" asp-route-itemid="">
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@_product.Product.Id">
                                     <img src="@_product.Product.ImagePath" class="card-img-top" alt="@_product.Product.Name"
                                          style="height: 200px; object-fit: cover;">
                                 </a>
@@ -83,6 +99,7 @@
                     }
                 </div>
             }
+
             else
             {
                 <div class="alert alert-info">
