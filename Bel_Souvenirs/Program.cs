@@ -17,8 +17,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<EmailService>();
 
 builder.Services.AddScoped<IUserService, UserService>();
-
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()

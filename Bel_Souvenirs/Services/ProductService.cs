@@ -4,9 +4,10 @@ using Microsoft.EntityFrameworkCore;
 namespace Bel_Souvenirs.Services
 {
 
-    public class ProductService(AppDbContext context) : IProductService
+    public class ProductService(AppDbContext context, IReviewService reviewService) : IProductService
     {
         private readonly AppDbContext _context = context;
+        private readonly IReviewService _reviewService = reviewService;
 
         public async Task<List<Product>> GetAllProducts()
         {
@@ -62,7 +63,6 @@ namespace Bel_Souvenirs.Services
 
             return await query.ToListAsync();
         }
-
         public async Task<List<string>> GetCategoryNamesAsync()
         {
             return await _context.Products
@@ -71,6 +71,12 @@ namespace Bel_Souvenirs.Services
                 .Distinct()
                 .OrderBy(c => c)
                 .ToListAsync();
+        }
+        public async Task<double> GetAverageRatingAsync(int productId)
+        {
+            var reviews = await _reviewService.GetAllReviewsAsync(productId);
+
+            return reviews.Count != 0 ? reviews.Average(r => r.Rating) : 0;
         }
     }
 }

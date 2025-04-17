@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace Bel_Souvenirs.Models
+﻿namespace Bel_Souvenirs.Models
 {
     public class Product
     {

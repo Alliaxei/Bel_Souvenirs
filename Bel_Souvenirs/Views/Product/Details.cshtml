@@ -1,5 +1,4 @@
 ﻿@model Bel_Souvenirs.ViewModels.ProductViewModel
-
 @{
     ViewData["Title"] = Model.Product.Name;
 }
@@ -7,6 +6,7 @@
 @section Scripts {
     <script src="~/js/cart.js"></script>
     <script src="~/js/modal.js"></script>
+    <script src="~/js/setStars.js"></script>
 }
 
 <div class="container py-4">
@@ -42,6 +42,27 @@
                     </button>
                 </form>
             </div>
+            <div class="d-flex align-items-center mb-3">
+                <span class="fs-5 me-3">Рейтинг товара:</span>
+                <div class="star-rating d-flex gap-1">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= Math.Floor(Model.AverageRating))
+                        {
+                            <i class="bi bi-star-fill text-warning fs-5"></i> 
+                        }
+                        else if (i == Math.Ceiling(Model.AverageRating) && Model.AverageRating % 1 != 0)
+                        {
+                            <i class="bi bi-star-half text-warning fs-5"></i> 
+                        }
+                        else
+                        {
+                            <i class="bi bi-star text-secondary fs-5"></i>
+                        }
+                    }
+                </div>
+                <span class="text-muted">(@Model.AverageRating.ToString("F1"))</span> 
+            </div>
 
             <div class="mb-4">
                 <h4 class="mb-3">Описание</h4>
@@ -70,6 +91,74 @@
         </div>
     </div>
 
+    <hr class="my-5" />
+
+    <div class="row">
+        <div class="col-md-8">
+            <h3 class="mb-4">Отзывы</h3>
+
+            @if (Model.Reviews.Any())
+            {
+                @foreach (var review in Model.Reviews.OrderByDescending(r => r.CreatedAt))
+                {
+                    <div class="card mb-3 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0 fw-semibold text-primary">@review.User.FullName</h6>
+                                <small class="text-muted">@review.CreatedAt.ToString("dd MMMM yyyy")</small>
+                            </div>
+                            <div class="star-rating d-flex gap-1 mb-2">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= review.Rating)
+                                    {
+                                        <i class="bi bi-star-fill text-warning fs-5"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-star text-secondary fs-5"></i>
+                                    }
+                                }
+                            </div>
+
+                            <p class="mb-0">@review.Text</p>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-muted">Отзывов пока нет.</p>
+            }
+        </div>
+
+
+        <div class="col-md-4">
+            <h4>Оставить отзыв</h4>
+            <form asp-controller="Product" asp-action="AddReview" method="post">
+                <input type="hidden" name="productId" value="@Model.Product.Id" />
+
+                <div class="mb-3">
+                    <label for="NewRating" class="form-label">Оценка</label>
+                    <div id="ratingStars" class="d-flex gap-1">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <i class="bi bi-star text-secondary fs-5" data-value="@i"></i>
+                        }
+                    </div>
+                    <input type="hidden" name="NewRating" id="NewRating" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="NewComment" class="form-label">Комментарий</label>
+                    <textarea name="NewComment" class="form-control" rows="4" required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Отправить</button>
+            </form>
+        </div>
+    </div>
+
     @* Модальное окно для успешной покупки *@
     <div class="modal fade" id="orderSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -89,3 +178,4 @@
         </div>
     </div>
 </div>
+

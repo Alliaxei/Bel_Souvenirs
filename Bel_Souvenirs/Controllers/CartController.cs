@@ -28,7 +28,7 @@ namespace Bel_Souvenirs.Controllers
             ViewBag.CartItemCount = await _cartService.GetCartItemsCountAsync();
             return View(cart);
         }
-
+        
         [HttpPost]
         public async Task<IActionResult> AddToCart(int productId)
         {
