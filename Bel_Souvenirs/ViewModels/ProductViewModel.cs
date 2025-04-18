@@ -11,5 +11,6 @@ namespace Bel_Souvenirs.ViewModels
         public int NewRating { get; set; }
         public int Rating { get; set; }
         public double AverageRating { get; set; }
+        public string CurrentUserId {  get; set; } = string.Empty;
     }
 }

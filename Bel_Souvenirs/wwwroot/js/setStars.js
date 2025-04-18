@@ -1,13 +1,17 @@
 $(document).ready(function () {
     var $stars = $('#ratingStars i');
-    var $ratingInput = $('#NewRating');
+    var $ratingInput = $('#Rating');
     function updateStars(rating) {
         $stars.each(function () {
             var starValue = $(this).data('value');
             if (starValue <= rating) {
-                $(this).removeClass('text-secondary').addClass('text-warning');
+                $(this)
+                    .removeClass('bi-star text-secondary')
+                    .addClass('bi-star-fill text-warning');
             } else {
-                $(this).removeClass('text-warning').addClass('text-secondary');
+                $(this)
+                    .removeClass('bi-star-fill text-warning')
+                    .addClass('bi-star text-secondary');
             }
         });
     }
@@ -18,7 +22,7 @@ $(document).ready(function () {
     });
 
     $stars.on('mouseout', function () {
-        var currentRating = $ratingInput.val() || 0;
+        var currentRating = parseInt($ratingInput.val()) || 0;
         updateStars(currentRating);
     });
 

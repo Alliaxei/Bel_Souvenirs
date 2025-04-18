@@ -1,3 +1,4 @@
+using Bel_Souvenirs.Data;
 using Bel_Souvenirs.MiddleWare;
 using Bel_Souvenirs.Models;
 using Bel_Souvenirs.Services;
@@ -35,6 +36,12 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 var app = builder.Build();
 
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+ 
+//    SeedData.InitializeAsync(services).GetAwaiter().GetResult();
+//}
 
 app.UseAuthentication();
 app.UseAuthorization();

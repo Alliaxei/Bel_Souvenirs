@@ -19,17 +19,19 @@ namespace Bel_Souvenirs.Controllers
             if (product == null)
                 return NotFound();
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var isInCart = userId != null && await _cartService.IsProductInCartAsync(id, userId);
-
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            var isInCart = userId != string.Empty && await _cartService.IsProductInCartAsync(id, userId);
+            
             var Reviews = await _reviewService.GetAllReviewsAsync(id);
             var averageRating = await _productService.GetAverageRatingAsync(id);
+
             return View(new ProductViewModel
             {
                 Product = product,
                 IsInCart = isInCart,
                 Reviews = Reviews,
-                AverageRating = averageRating
+                AverageRating = averageRating,
+                CurrentUserId = userId
             });
         }
 
