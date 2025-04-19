@@ -80,33 +80,6 @@
         @foreach (var _product in Model.AllProducts.Take(9))
         {
             @await Html.PartialAsync("_ProductCardsPartial", new[] { _product })
-
-            @* <div class="col-md-4 mb-4"> *@
-            @*     <div class="card h-100 shadow-sm border-0 rounded-4 d-flex flex-column hover-shadow"> *@
-            @*         <a asp-controller="Product" asp-action="Details" asp-route-id="@_product.Product.Id"> *@
-            @*             @if (!string.IsNullOrEmpty(_product.Product.ImagePath)) *@
-            @*             { *@
-            @*                 <img src="@_product.Product.ImagePath" class="card-img-top rounded-top-4" style="height: 250px; object-fit: cover;" alt="@_product.Product.Name" /> *@
-            @*             } *@
-            @*         </a> *@
-            @*         <div class="card-body d-flex flex-column"> *@
-            @*             <a asp-controller="Product" asp-action="Details" asp-route-id="@_product.Product.Id" class="text-decoration-none text-dark"> *@
-            @*                 <h5 class="card-title">@_product.Product.Name</h5> *@
-            @*             </a> *@
-            @*             <p class="card-text text-danger fw-semibold">@_product.Product.Price.ToString("C", new System.Globalization.CultureInfo("be-BY"))</p> *@
-            @*             <div class="mt-auto d-flex flex-wrap gap-2"> *@
-            @*                 <button class="btn @(_product.IsInCart ? "btn-danger" : "btn-primary") flex-grow-1 cart-button" *@
-            @*                         data-product-id="@_product.Product.Id"> *@
-            @*                     @(_product.IsInCart ? "Удалить" : "В корзину") *@
-            @*                 </button> *@
-            @*                 <a asp-controller="Product" asp-action="Details" asp-route-id="@_product.Product.Id" *@
-            @*                    class="btn btn-outline-secondary"> *@
-            @*                     Подробнее *@
-            @*                 </a> *@
-            @*             </div> *@
-            @*         </div> *@
-            @*     </div> *@
-            @* </div> *@
         }
     </div>
 

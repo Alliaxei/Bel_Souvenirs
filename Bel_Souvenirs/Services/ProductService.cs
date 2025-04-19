@@ -1,4 +1,5 @@
 ﻿using Bel_Souvenirs.Models;
+using Bel_Souvenirs.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bel_Souvenirs.Services
@@ -77,6 +78,42 @@ namespace Bel_Souvenirs.Services
             var reviews = await _reviewService.GetAllReviewsAsync(productId);
 
             return reviews.Count != 0 ? reviews.Average(r => r.Rating) : 0;
+        }
+        public async Task AddProductAsync(AdminProductViewModel model, string imagePath)
+        {
+            var product = new Product
+            {
+                Name = model.Name,
+                Brand = model.Brand,
+                Model = model.Model,
+                Rating = 0,
+                Description = model.Description,
+                Price = model.Price,
+                ImagePath = imagePath,
+                Category = model.Category,
+                CreatedDate = DateTime.UtcNow,
+            };
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateProductAsync(int id, AdminProductViewModel model, string? imagePath)
+        {
+            var product = await _context.Products.FindAsync(id) ?? throw new Exception("Товар не найден");
+            
+            product.Name = model.Name;
+            product.Brand = model.Brand;
+            product.Model = model.Model;
+            product.Description = model.Description;
+            product.Price = model.Price;
+            product.Category = model.Category;
+
+            if (!string.IsNullOrEmpty(imagePath)) product.ImagePath = imagePath;
+            
+
+            _context.Products.Update(product);
+            await _context.SaveChangesAsync();
         }
     }
 }

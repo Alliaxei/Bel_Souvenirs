@@ -1,4 +1,3 @@
-using Bel_Souvenirs.Data;
 using Bel_Souvenirs.MiddleWare;
 using Bel_Souvenirs.Models;
 using Bel_Souvenirs.Services;
@@ -39,12 +38,35 @@ var app = builder.Build();
 //using (var scope = app.Services.CreateScope())
 //{
 //    var services = scope.ServiceProvider;
- 
+//    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+//    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+
+//    string[] roleNames = { "Admin", "User" };
+//    foreach (var roleName in roleNames)
+//    {
+//        var roleExist = await roleManager.RoleExistsAsync(roleName);
+//        if (!roleExist)
+//        {
+//            await roleManager.CreateAsync(new IdentityRole(roleName));
+//        }
+//    }
+
+//    var adminUser = await userManager.FindByEmailAsync("admin@example.com");
+//    if (adminUser != null && !await userManager.IsInRoleAsync(adminUser, "Admin"))
+//    {
+//        await userManager.AddToRoleAsync(adminUser, "Admin");
+//    }
+//}
+
+
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+
 //    SeedData.InitializeAsync(services).GetAwaiter().GetResult();
 //}
 
-app.UseAuthentication();
-app.UseAuthorization();
+
 
 
 if (!app.Environment.IsDevelopment())
@@ -59,8 +81,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseMiddleware<UserInfoMiddleware>();
+
 
 app.MapControllerRoute(
     name: "cart",

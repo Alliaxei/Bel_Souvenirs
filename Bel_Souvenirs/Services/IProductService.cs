@@ -1,4 +1,5 @@
 ﻿using Bel_Souvenirs.Models;
+using Bel_Souvenirs.ViewModels;
 
 namespace Bel_Souvenirs.Services
 {
@@ -11,5 +12,7 @@ namespace Bel_Souvenirs.Services
         Task<List<Product>> GetFilteredProductsAsync(string? search, string? category, string? sortOrder);
         Task<List<string>> GetCategoryNamesAsync();
         Task<double> GetAverageRatingAsync(int productId);
+        Task AddProductAsync(AdminProductViewModel model, string imagePath);
+        Task UpdateProductAsync(int id, AdminProductViewModel model, string? imagePath);
     }
 }

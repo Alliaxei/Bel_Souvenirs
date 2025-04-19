@@ -1,0 +1,30 @@
+﻿@model Bel_Souvenirs.Models.Product
+
+<div class="mb-3">
+    <label asp-for="Name" class="form-label">Название</label>
+    <input asp-for="Name" class="form-control" />
+</div>
+<div class="mb-3">
+    <label asp-for="Brand" class="form-label">Бренд</label>
+    <input asp-for="Brand" class="form-control" />
+</div>
+<div class="mb-3">
+    <label asp-for="Model" class="form-label">Модель</label>
+    <input asp-for="Model" class="form-control" />
+</div>
+<div class="mb-3">
+    <label asp-for="Description" class="form-label">Описание</label>
+    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+</div>
+<div class="mb-3">
+    <label asp-for="Price" class="form-label">Цена</label>
+    <input asp-for="Price" class="form-control" type="number" step="0.01" />
+</div>
+<div class="mb-3">
+    <label asp-for="Category" class="form-label">Категория</label>
+    <input asp-for="Category" class="form-control" />
+</div>
+<div class="mb-3">
+    <label class="form-label">Изображение</label>
+    <input type="file" name="ImageFile" class="form-control" />
+</div>

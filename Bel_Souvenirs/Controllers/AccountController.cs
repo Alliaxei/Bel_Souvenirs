@@ -138,12 +138,17 @@ namespace Bel_Souvenirs.Controllers
 
                 if (result.Succeeded)
                 {
+                    var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+                    if (isAdmin)
+                    {
+                        return RedirectToAction("Index", "Admin");
+                    }
+
                     return RedirectToAction("Index", "Home");
                 }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Неверный Email или пароль");
-                }
+              
+                ModelState.AddModelError(string.Empty, "Неверный Email или пароль");
+               
                 return View(model);
             }
             return View(model);
@@ -178,7 +183,7 @@ namespace Bel_Souvenirs.Controllers
                 Email = user.Email ?? "Email not found"
             };
 
-            ViewBag.CartItemCount = await    _cartService.GetCartItemsCountAsync();
+            ViewBag.CartItemCount = await _cartService.GetCartItemsCountAsync();
 
             return View("UserProfile", viewModel);
         }

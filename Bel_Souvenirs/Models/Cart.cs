@@ -5,6 +5,6 @@
         public int Id { get; set; }
         public string UserId { get; set; } = null!;
         public virtual ApplicationUser User { get; set; } = null!;
-        public virtual List<CartItem> Items { get; set; } = new List<CartItem>();
+        public virtual List<CartItem> Items { get; set; } = [];
     }
 }
