@@ -3,7 +3,7 @@
     ViewData["Title"] = "Каталог товаров";
 }
 @section Scripts {
-    <script src="~/js/cart.js"></script>
+<script src="~/js/cart.js"></script>
 }
 
 <div class="container mt-4">
@@ -12,7 +12,7 @@
             <form asp-action="Index" method="get" class="form-inline">
                 <div class="input-group w-100">
                     <input type="text" class="form-control" name="searchString"
-                           placeholder="Поиск товаров...">
+                    placeholder="Поиск товаров...">
                     <button class="btn btn-success" type="submit">
                         <i class="fas fa-search"></i>
                     </button>
@@ -22,25 +22,25 @@
         <div class="col-md-4">
             <div class="dropdown">
                 <button class="btn btn-outline-success dropdown-toggle w-100"
-                        type="button" data-bs-toggle="dropdown">
+                type="button" data-bs-toggle="dropdown">
                     Сортировка
                 </button>
                 <ul class="dropdown-menu">
                     <li>
                         <a class="dropdown-item" asp-action="Index"
-                           asp-route-sortOrder="@ViewData["NameSort"]">По названию</a>
+                        asp-route-sortOrder="@ViewData["NameSort"]">По названию</a>
                     </li>
                     <li>
                         <a class="dropdown-item" asp-action="Index"
-                           asp-route-sortOrder="@ViewData["PriceSort"]">По цене вверх</a>
+                        asp-route-sortOrder="@ViewData["PriceSort"]">По цене вверх</a>
                     </li>
                     <li>
                         <a class="dropdown-item" asp-action="Index"
-                           asp-route-sortOrder="@ViewData["PriceSort"]">По цене вниз</a>
+                        asp-route-sortOrder="@ViewData["PriceSort"]">По цене вниз</a>
                     </li>
                     <li>
                         <a class="dropdown-item" asp-action="Index"
-                           asp-route-sortOrder="@ViewData["PopularSort"]">Сначала популярные</a>
+                        asp-route-sortOrder="@ViewData["PopularSort"]">Сначала популярные</a>
                     </li>
                 </ul>
             </div>
@@ -59,8 +59,8 @@
                         @foreach (var cat in ViewBag.Categories as List<string> ?? [])
                         {
                             <a asp-action="Index"
-                               asp-route-category="@cat"
-                               class="list-group-item list-group-item-action @(ViewBag.CurrentCategory == cat ? "active" : "")">
+                            asp-route-category="@cat"
+                            class="list-group-item list-group-item-action @(ViewBag.CurrentCategory == cat ? "active" : "")">
                                 @cat
                             </a>
                         }
@@ -71,7 +71,7 @@
                 </a>
             </div>
         </div>
-     
+
 
         <div class="col-md-9">
             @if (Model != null && Model.Any())
@@ -83,17 +83,20 @@
                             <div class="card h-100">
                                 <a asp-controller="Product" asp-action="Details" asp-route-id="@_product.Product.Id">
                                     <img src="@_product.Product.ImagePath" class="card-img-top" alt="@_product.Product.Name"
-                                         style="height: 200px; object-fit: cover;">
+                                    style="height: 200px; object-fit: cover;">
                                 </a>
                                 <div class="card-body">
                                     <h5 class="card-title">@_product.Product.Name</h5>
                                     <p class="card-text">@_product.Product.Description</p>
                                     <p class="text-success fw-bold">@_product.Product.Price.ToString("C", new System.Globalization.CultureInfo("be-BY"))</p>
                                 </div>
-                                <button class="btn @(_product.IsInCart ? "btn-danger" : "btn-primary") cart-button"
-                                        data-product-id="@_product.Product.Id">
-                                    @(_product.IsInCart ? "Удалить" : "В корзину")
-                                </button>
+                                @if (!User.IsInRole("Admin"))
+                                {
+                                    <button class="btn @(_product.IsInCart ? "btn-danger" : "btn-primary") cart-button"
+                                            data-product-id="@_product.Product.Id">
+                                        @(_product.IsInCart ? "Удалить" : "В корзину")
+                                    </button>
+                                }
                             </div>
                         </div>
                     }

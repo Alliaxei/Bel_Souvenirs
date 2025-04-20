@@ -4,7 +4,6 @@ using Bel_Souvenirs.Models;
 using Bel_Souvenirs.Services;
 using Bel_Souvenirs.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using MimeKit.Tnef;
 
 namespace Bel_Souvenirs.Controllers
 {
@@ -22,11 +21,18 @@ namespace Bel_Souvenirs.Controllers
                 ? await cartService.GetCartItemsIdsAsync(userId) 
                 : [];
 
-            var productsModel =  products.Select(p => new ProductViewModel
+            var productsModel = new List<ProductViewModel>();
+            foreach (var product in products)
             {
-                Product = p,
-                IsInCart = productIds.Contains(p.Id)
-            }).ToList();
+                var averageRating = await _productService.GetAverageRatingAsync(product.Id);
+
+                productsModel.Add(new ProductViewModel
+                {
+                    Product = product,
+                    IsInCart = productIds.Contains(product.Id),
+                    AverageRating = averageRating,
+                });
+            }
 
             var topPopular = productsModel.
                 OrderByDescending(p => p.Product.AmountOfOrders)
@@ -62,13 +68,22 @@ namespace Bel_Souvenirs.Controllers
 
             var products = await _productService.GetAllProducts(offset, 9);
 
-            var productModels = products.Select(p => new ProductViewModel
-            {
-                Product = p,
-                IsInCart = productIdsInCart.Contains(p.Id)
-            }).ToList();
+            var productsModel = new List<ProductViewModel>();
 
-            return PartialView("_ProductCardsPartial", productModels);
+            foreach(var product in products)
+            {
+                var averageRating = await _productService.GetAverageRatingAsync(product.Id);
+
+                productsModel.Add(new ProductViewModel
+                {
+                    Product = product,
+                    AverageRating = averageRating,
+                    IsInCart = productIdsInCart.Contains(product.Id)
+
+                });
+            }
+
+            return PartialView("_ProductCardsPartial", productsModel);
         }
     }
 }

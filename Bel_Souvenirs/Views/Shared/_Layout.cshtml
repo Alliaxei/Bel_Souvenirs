@@ -46,14 +46,18 @@
                         </a>
                     </li>
                 </ul>
-
+                
                 <div class="d-flex">
-                    <a class="btn btn-outline-light me-2" asp-controller="Cart" asp-action="Index">
-                        <i class="fas fa-shopping-cart me-1"></i>Корзина 
-                        <span class="badge bg-danger ms-1 cart-badge" style="@(ViewBag.CartItemCount > 0 ? "" : "display: none;")">
-                            @(ViewBag.CartItemCount > 0 ? ViewBag.CartItemCount : 0)
-                        </span>
-                    </a>
+                    @if (!User.IsInRole("Admin"))
+                    {
+                        <a class="btn btn-outline-light me-2" asp-controller="Cart" asp-action="Index">
+                            <i class="fas fa-shopping-cart me-1"></i>Корзина
+                            <span class="badge bg-danger ms-1 cart-badge" style="@(ViewBag.CartItemCount > 0 ? "" : "display: none;")">
+                                @(ViewBag.CartItemCount > 0 ? ViewBag.CartItemCount : 0)
+                            </span>
+                        </a>
+                    }
+                    
                  
 
 
@@ -66,9 +70,12 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
-                                    <a class="dropdown-item" asp-controller="Account" asp-action="Profile">
-                                        <i class="fas fa-user me-1"></i>Профиль
-                                    </a>
+                                    @if (!User.IsInRole("Admin"))
+                                    {
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="Profile">
+                                            <i class="fas fa-user me-1"></i>Профиль
+                                        </a>
+                                    }
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>

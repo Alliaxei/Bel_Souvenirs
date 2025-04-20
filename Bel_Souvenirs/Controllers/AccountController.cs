@@ -141,7 +141,7 @@ namespace Bel_Souvenirs.Controllers
                     var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
                     if (isAdmin)
                     {
-                        return RedirectToAction("Index", "Admin");
+                        return RedirectToAction("ManageUsers", "Admin");
                     }
 
                     return RedirectToAction("Index", "Home");

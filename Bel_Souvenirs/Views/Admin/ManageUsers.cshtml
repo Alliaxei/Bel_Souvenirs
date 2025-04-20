@@ -8,11 +8,21 @@
 <div class="container mt-4">
     <h2>Управление пользователями</h2>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">
-            <i class="bi bi-plus-circle me-1"></i> Добавить пользователя
-        </button>
-    </div>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+        </div>
+    }
+
 
     <table class="table table-hover table-bordered align-middle">
         <thead class="table-dark">
@@ -31,15 +41,16 @@
                     <td>@user.Email</td>
                     <td>@user.Role</td>
                     <td style="width: 180px;">
-                        <!-- Кнопки для редактирования и удаления -->
                         <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#editUserModal-@user.Id">
                             <i class="bi bi-pencil-square"></i>
                         </button>
-                        <form asp-action="DeleteUser" asp-route-id="@user.Id" method="post" class="d-inline" onsubmit="return confirm('Удалить этого пользователя?');">
-                            <button type="submit" class="btn btn-sm btn-danger">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
+                        <button type="button"
+                                class="btn btn-sm btn-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmDeleteModal"
+                                data-user-id="@user.Id">
+                            <i class="bi bi-trash"></i>
+                        </button>
                     </td>
                 </tr>
             }
@@ -47,40 +58,29 @@
     </table>
 </div>
 
-<!-- Модальное окно: Добавление пользователя -->
-<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+<!-- Модальное окно подтверждения удаления -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
-            <form asp-action="AddUser" method="post">
+            <form id="deleteUserForm" method="post" asp-action="DeleteUser">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addUserModalLabel">Добавить пользователя</h5>
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Подтверждение удаления</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="FullName">Имя пользователя</label>
-                        <input type="text" class="form-control" id="FullName" name="FullName" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="Email">Email</label>
-                        <input type="email" class="form-control" id="Email" name="Email" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="Role">Роль</label>
-                        <select class="form-control" id="Role" name="Role" required>
-                            <option value="Admin">Администратор</option>
-                            <option value="User">Пользователь</option>
-                        </select>
-                    </div>
+                    <p>Вы уверены, что хотите удалить этого пользователя?</p>
+                    <input type="hidden" id="userId" name="id" />
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Сохранить</button>
+                    <button type="submit" class="btn btn-danger">Удалить</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+
 
 <!-- Модальные окна: Редактирование пользователя -->
 @foreach (var user in Model.Users)
@@ -97,11 +97,11 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="FullName">Имя пользователя</label>
-                            <input type="text" class="form-control" id="FullName" name="FullName" value="@user.FullName" required />
+                            <input type="text" class="form-control" id="FullName" name="fullName" value="@user.FullName" required />
                         </div>
                         <div class="form-group">
                             <label for="Email">Email</label>
-                            <input type="email" class="form-control" id="Email" name="Email" value="@user.Email" required />
+                            <input type="email" class="form-control" id="Email" name="Email" value="@user.Email" required readonly"/>
                         </div>
                       
                     </div>
@@ -117,19 +117,28 @@
 
 @section Scripts {
     <script>
-        // Инициализация данных в модальных окнах
         $('#editUserModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
             var userId = button.data('id');
             var userFullName = button.data('name');
             var userEmail = button.data('email');
-            var userRole = button.data('role');
-
             var modal = $(this);
+
             modal.find('#Id').val(userId);
             modal.find('#FullName').val(userFullName);
             modal.find('#Email').val(userEmail);
-            modal.find('#Role').val(userRole);
+        });
+
+
+        var deleteUserForm = document.getElementById('deleteUserForm');
+        var confirmDeleteModal = document.getElementById('confirmDeleteModal');
+        var userIdInput = document.getElementById('userId');
+
+        confirmDeleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var userId = button.getAttribute('data-user-id');
+
+            userIdInput.value = userId;
         });
     </script>
 }

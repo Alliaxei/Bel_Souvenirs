@@ -1,5 +1,6 @@
 ﻿using Bel_Souvenirs.Models;
 using Bel_Souvenirs.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -28,7 +29,8 @@ namespace Bel_Souvenirs.Controllers
             ViewBag.CartItemCount = await _cartService.GetCartItemsCountAsync();
             return View(cart);
         }
-        
+
+        [Authorize(Roles = "User")]
         [HttpPost]
         public async Task<IActionResult> AddToCart(int productId)
         {
@@ -46,7 +48,7 @@ namespace Bel_Souvenirs.Controllers
             var cartCount = await _cartService.GetCartItemsCountAsync();
             return Json(new { success = true, cartCount });
         }
-
+        [Authorize(Roles = "User")]
         [HttpPost]
         public async Task<IActionResult> RemoveFromCart(int productId)
         {
@@ -66,6 +68,7 @@ namespace Bel_Souvenirs.Controllers
             return Json(new { success = true, cartCount });
         }
 
+        [Authorize(Roles = "User")]
         [HttpPost]
         public async Task<IActionResult> RemoveItem(int itemId)
         {
@@ -92,6 +95,7 @@ namespace Bel_Souvenirs.Controllers
             });
         }
 
+        [Authorize(Roles = "User")]
         [HttpPost]
         public async Task<IActionResult> UpdateQuantity(int itemId, int quantity)
         {
@@ -117,6 +121,7 @@ namespace Bel_Souvenirs.Controllers
 
         }
 
+        [Authorize(Roles = "User")]
         [HttpPost]
         public async Task<IActionResult> Order(int id)
         {

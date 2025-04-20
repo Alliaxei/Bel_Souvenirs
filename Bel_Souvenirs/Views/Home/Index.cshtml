@@ -4,13 +4,13 @@
 }
 
 @section Scripts {
-    <script src="~/js/cart.js"></script>
-    <script src="~/js/load.js"></script>
+<script src="~/js/cart.js"></script>
+<script src="~/js/load.js"></script>
 }
 
 <style>
     .hover-shadow:hover {
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
     }
 </style>
 
@@ -59,10 +59,13 @@
                             </a>
                             <p class="text-success fw-semibold">@_product.Product.Price.ToString("C", new System.Globalization.CultureInfo("be-BY"))</p>
                             <div class="mt-auto d-flex flex-wrap gap-2">
-                                <button class="btn @(_product.IsInCart ? "btn-danger" : "btn-primary") flex-grow-1 cart-button"
-                                        data-product-id="@_product.Product.Id">
-                                    @(_product.IsInCart ? "Удалить" : "В корзину")
-                                </button>
+                                @if (!User.IsInRole("Admin"))
+                                {
+                                    <button class="btn @(_product.IsInCart ? "btn-danger" : "btn-primary") flex-grow-1 cart-button"
+                                            data-product-id="@_product.Product.Id">
+                                        @(_product.IsInCart ? "Удалить" : "В корзину")
+                                    </button>
+                                }
                                 <a asp-controller="Product" asp-action="Details" asp-route-id="@_product.Product.Id"
                                    class="btn btn-outline-secondary">
                                     Подробнее

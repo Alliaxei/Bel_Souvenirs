@@ -27,11 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\images\deer.jpg" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\images\products\" />
+    <None Include="wwwroot\images\products\deer.jpg" />
   </ItemGroup>
 
 </Project>

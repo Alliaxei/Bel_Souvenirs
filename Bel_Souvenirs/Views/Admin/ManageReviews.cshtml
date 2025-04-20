@@ -1,0 +1,102 @@
+﻿@model List<AdminReviewViewModel>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Управление комментариями";
+}
+
+<div class="container mt-4">
+    <h2>Управление комментариями</h2>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+        </div>
+    }
+    <table class="table table-hover table-bordered align-middle mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>Автор</th>
+                <th>Товар</th>
+                <th>Комментарий</th>
+                <th>Оценка</th>
+                <th>Дата</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var review in Model)
+            {
+                <tr>
+                    <td>@review.AuthorEmail</td>
+                    <td>@review.ProductName</td>
+                    <td>@review.Text</td>
+                    <td>
+                        @for (int i = 0; i < review.Rating; i++)
+                        {
+                            <i class="bi bi-star-fill text-warning"></i>
+                        }
+                        @for (int i = (int)review.Rating; i < 5; i++)
+                        {
+                            <i class="bi bi-star text-secondary"></i>
+                        }
+                    </td>
+                    <td>@review.CreatedAt.ToString("g")</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmDeleteModal"
+                                data-review-id="@review.Id"
+                                data-review-author="@review.AuthorEmail">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+</div>
+
+<!-- Модальное окно удаления -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="DeleteReview" method="post" id="deleteReviewForm">
+                <input type="hidden" name="id" id="reviewIdToDelete" />
+                <div class="modal-header">
+                    <h5 class="modal-title">Удаление комментария</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Вы уверены, что хотите удалить комментарий от <strong id="reviewAuthorToDelete"></strong>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const deleteModal = document.getElementById('confirmDeleteModal');
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const reviewId = button.getAttribute('data-review-id');
+            const reviewAuthor = button.getAttribute('data-review-author');
+
+            document.getElementById('reviewIdToDelete').value = reviewId;
+            document.getElementById('reviewAuthorToDelete').innerText = reviewAuthor;
+        });
+    </script>
+}

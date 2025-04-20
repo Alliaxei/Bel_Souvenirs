@@ -5,16 +5,10 @@ using System.Net;
 
 namespace Bel_Souvenirs.Services
 {
-    public class UserService : IUserService
+    public class UserService(UserManager<ApplicationUser> userManager, AppDbContext appDbContext) : IUserService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly AppDbContext _appDbContext;
-
-        public UserService(UserManager<ApplicationUser> userManager, AppDbContext appDbContext)
-        {
-            _userManager = userManager;
-            _appDbContext = appDbContext;
-        }
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
+        private readonly AppDbContext _appDbContext = appDbContext;
 
         public async Task<IdentityResult> RegisterUserAsync(RegisterViewModel model)
         {
@@ -73,6 +67,19 @@ namespace Bel_Souvenirs.Services
             {
                 var errors = string.Join("; ", result.Errors.Select(e => e.Description));
                 throw new Exception($"Ошибка при обновлении имени: {errors}");
+            }
+        }
+
+        public async Task DeleteUserAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId) ?? throw new Exception("Пользователь не найден");
+            
+            var result = await _userManager.DeleteAsync(user);
+
+            if (!result.Succeeded)
+            {
+                throw new Exception("Не удалось удалить пользователя: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+
             }
         }
     }

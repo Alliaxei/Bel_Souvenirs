@@ -6,16 +6,41 @@
         <div class="card h-100 shadow-sm border-0 rounded-4 d-flex flex-column hover-shadow">
             <a asp-controller="Product" asp-action="Details" asp-route-id="@_product.Product.Id">
                 <img src="@_product.Product.ImagePath" class="card-img-top rounded-top-4"
-                     style="height: 250px; object-fit: cover;" alt="@_product.Product.Name" />
+                style="height: 250px; object-fit: cover;" alt="@_product.Product.Name" />
             </a>
             <div class="card-body d-flex flex-column">
                 <h5 class="card-title">@_product.Product.Name</h5>
+
+                <div class="d-flex align-items-center mb-3">
+                    <span class="fs-5 me-3"></span>
+                    <div class="star-rating d-flex gap-1">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= Math.Floor(_product.AverageRating))
+                            {
+                                <i class="bi bi-star-fill text-warning fs-5"></i>
+                            }
+                            else if (i == Math.Ceiling(_product.AverageRating) && _product.AverageRating % 1 != 0)
+                            {
+                                <i class="bi bi-star-half text-warning fs-5"></i>
+                            }
+                            else
+                            {
+                                <i class="bi bi-star text-secondary fs-5"></i>
+                            }
+                        }
+                    </div>
+                </div>
+
                 <p class="text-danger fw-semibold">@_product.Product.Price.ToString("C", new System.Globalization.CultureInfo("be-BY"))</p>
                 <div class="mt-auto d-flex flex-wrap gap-2">
-                    <button class="btn @(_product.IsInCart ? "btn-danger" : "btn-primary") flex-grow-1 cart-button"
-                            data-product-id="@_product.Product.Id">
-                        @(_product.IsInCart ? "Удалить" : "В корзину")
-                    </button>
+                    @if (!User.IsInRole("Admin"))
+                    {
+                        <button class="btn @(_product.IsInCart ? "btn-danger" : "btn-primary") flex-grow-1 cart-button"
+                                data-product-id="@_product.Product.Id">
+                            @(_product.IsInCart ? "Удалить" : "В корзину")
+                        </button>
+                    }
                     <a asp-controller="Product" asp-action="Details" asp-route-id="@_product.Product.Id"
                        class="btn btn-outline-secondary">
                         Подробнее

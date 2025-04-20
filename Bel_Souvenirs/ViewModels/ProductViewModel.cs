@@ -9,7 +9,7 @@ namespace Bel_Souvenirs.ViewModels
         public List<Review> Reviews { get; set; } = [];
         public string NewComment { get; set; } = string.Empty;
         public int NewRating { get; set; }
-        public int Rating { get; set; }
+        public double Rating { get; set; }
         public double AverageRating { get; set; }
         public string CurrentUserId {  get; set; } = string.Empty;
     }

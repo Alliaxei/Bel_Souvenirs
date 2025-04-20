@@ -1,5 +1,4 @@
-﻿
-using Bel_Souvenirs.Models;
+﻿using Bel_Souvenirs.Models;
 using Bel_Souvenirs.ViewModels;
 using Microsoft.AspNetCore.Identity;
 
@@ -12,5 +11,6 @@ namespace Bel_Souvenirs.Services
         Task<string> GenerateEmailConfirmationTokenAsync(ApplicationUser user);
         Task<IdentityResult> ConfirmEmailAsync(string userId, string token);
         Task UpdateFullNameAsync(string userId, string fullName);
+        Task DeleteUserAsync(string userId);
     }
 }

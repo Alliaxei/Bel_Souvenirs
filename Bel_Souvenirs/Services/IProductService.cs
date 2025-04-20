@@ -14,5 +14,6 @@ namespace Bel_Souvenirs.Services
         Task<double> GetAverageRatingAsync(int productId);
         Task AddProductAsync(AdminProductViewModel model, string imagePath);
         Task UpdateProductAsync(int id, AdminProductViewModel model, string? imagePath);
+        Task DeleteProductAsync(int id);
     }
 }

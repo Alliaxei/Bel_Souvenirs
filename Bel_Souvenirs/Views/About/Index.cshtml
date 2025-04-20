@@ -1,29 +1,69 @@
 ﻿@{
-    ViewData["Title"] = "О компании BelTechMarket";
+    ViewData["Title"] = "О компании";
+}
+
+@section Styles {
+    <style>
+        .hero-section {
+            background: url('/images/about-tech-bg.jpg') center/ no-repeat;
+            position: relative;
+        }
+
+            .hero-section::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(255, 255, 255, 0.9);
+            }
+
+            .hero-section > .container {
+                position: relative;
+            }
+
+        .about-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .about-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+            }
+
+        .principle-icon {
+            transition: transform 0.3s ease;
+        }
+
+            .principle-icon:hover {
+                transform: rotate(10deg) scale(1.1);
+            }
+    </style>
 }
 
 <div class="about-page">
     <!-- Герой-секция -->
-    <div class="hero-section bg-light py-5 mb-5">
+    <div class="hero-section py-5 mb-5">
         <div class="container text-center">
-            <h1 class="display-4 fw-bold text-primary">BelTechMarket</h1>
-            <p class="lead">Белорусская техника — надёжность, проверенная временем</p>
+            <h1 class="display-4 fw-bold text-success">BelTechMarket</h1>
+            <p class="lead text-dark">Белорусская техника — надёжность, проверенная временем</p>
         </div>
     </div>
 
     <div class="container">
         <!-- О компании -->
         <div class="row mb-5">
-            <div class="col-lg-6">
-                <div class="about-card p-4 h-100 shadow-sm rounded">
-                    <h2 class="text-primary mb-4"><i class="fas fa-industry me-2"></i>О нас</h2>
+            <div class="col-lg-6 mb-4">
+                <div class="about-card p-4 shadow-sm rounded bg-white h-100">
+                    <h2 class="text-success mb-3"><i class="fas fa-industry me-2"></i>О нас</h2>
                     <p class="fs-5">Мы — официальный дистрибьютор белорусской бытовой и промышленной техники. С 2010 года поставляем надёжные решения для дома и бизнеса.</p>
-                    <p>Наш каталог включает продукцию МТЗ, «Атлант», «Горизонт», «БелОМО» и других лидеров отрасли.</p>
+                    <p>В нашем каталоге продукция МТЗ, «Атлант», «Горизонт», «БелОМО» и других лидеров отрасли.</p>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="about-card p-4 h-100 shadow-sm rounded">
-                    <h2 class="text-primary mb-4"><i class="fas fa-cogs me-2"></i>Наш подход</h2>
+            <div class="col-lg-6 mb-4">
+                <div class="about-card p-4 shadow-sm rounded bg-white h-100">
+                    <h2 class="text-success mb-3"><i class="fas fa-cogs me-2"></i>Наш подход</h2>
                     <p class="fs-5">Ставим во главу угла надёжность, качество сборки и техническую поддержку.</p>
                     <p>Мы не просто продаём технику — мы обеспечиваем её бесперебойную работу и долгий срок службы.</p>
                 </div>
@@ -31,12 +71,12 @@
         </div>
 
         <!-- Преимущества -->
-        <div class="principles-section bg-light p-5 rounded mb-5">
-            <h2 class="text-center mb-4"><i class="fas fa-thumbs-up me-2"></i>Почему выбирают нас</h2>
+        <div class="bg-light p-5 rounded mb-5 shadow-sm">
+            <h2 class="text-center text-success mb-4"><i class="fas fa-thumbs-up me-2"></i>Почему выбирают нас</h2>
             <div class="row g-4">
                 <div class="col-md-3">
                     <div class="text-center p-3">
-                        <div class="principle-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                        <div class="principle-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
                             <i class="fas fa-shield-alt fa-2x"></i>
                         </div>
                         <h5>Надёжность</h5>
@@ -45,7 +85,7 @@
                 </div>
                 <div class="col-md-3">
                     <div class="text-center p-3">
-                        <div class="principle-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                        <div class="principle-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
                             <i class="fas fa-tools fa-2x"></i>
                         </div>
                         <h5>Сервис</h5>
@@ -54,7 +94,7 @@
                 </div>
                 <div class="col-md-3">
                     <div class="text-center p-3">
-                        <div class="principle-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                        <div class="principle-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
                             <i class="fas fa-clock fa-2x"></i>
                         </div>
                         <h5>Оперативность</h5>
@@ -63,7 +103,7 @@
                 </div>
                 <div class="col-md-3">
                     <div class="text-center p-3">
-                        <div class="principle-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                        <div class="principle-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
                             <i class="fas fa-tags fa-2x"></i>
                         </div>
                         <h5>Выгодные цены</h5>
@@ -74,41 +114,3 @@
         </div>
     </div>
 </div>
-
-<style>
-    .hero-section {
-        background: url('/images/about-tech-bg.jpg') center/cover no-repeat;
-        position: relative;
-    }
-
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.9);
-        }
-
-        .hero-section > .container {
-            position: relative;
-        }
-
-    .about-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-        .about-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
-        }
-
-    .principle-icon {
-        transition: transform 0.3s ease;
-    }
-
-        .principle-icon:hover {
-            transform: rotate(10deg) scale(1.1);
-        }
-</style>

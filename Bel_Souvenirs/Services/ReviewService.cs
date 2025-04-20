@@ -1,7 +1,6 @@
 ﻿using Bel_Souvenirs.Models;
 using Bel_Souvenirs.ViewModels;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Bel_Souvenirs.Services
 {
@@ -41,6 +40,24 @@ namespace Bel_Souvenirs.Services
             return await _context.Reviews
                 .Where(r => r.ProductId == productId)
                 .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
+        }
+
+        public async Task<List<AdminReviewViewModel>> GetAllReviewsViewModelsAsync()
+        {
+            return await _context.Reviews
+                .Include(r => r.Product)
+                .Include(r => r.User)
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => new AdminReviewViewModel
+                {
+                    Id = r.Id,
+                    AuthorEmail = r.User.Email ?? "",
+                    ProductName = r.Product.Name,
+                    Text = r.Text,
+                    Rating = r.Rating,
+                    CreatedAt = r.CreatedAt,
+                })
                 .ToListAsync();
         }
     }

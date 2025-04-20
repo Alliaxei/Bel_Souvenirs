@@ -7,40 +7,24 @@ using Microsoft.EntityFrameworkCore;
 using Bel_Souvenirs.Services;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 
 namespace Bel_Souvenirs.Controllers
 {
-    public class AdminController(UserManager<ApplicationUser> userManager, IProductService productService, IWebHostEnvironment webHostEnvironment) : Controller
+    public class AdminController(UserManager<ApplicationUser> userManager, IProductService productService, IWebHostEnvironment webHostEnvironment,
+        IUserService userService, IReviewService reviewService) : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly IProductService _productService = productService;
         private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
+        private readonly IUserService _userService = userService;
+        private readonly IReviewService _reviewService = reviewService;
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var users = await _userManager.Users.ToListAsync();
-            var userViewModels = new List<AdminUserViewModel>();
-
-            foreach (var user in users)
-            {
-                var roles = await _userManager.GetRolesAsync(user);
-                var userViewModel = new AdminUserViewModel
-                {
-                    Id = user.Id,
-                    FullName = user.FullName,
-                    Email = user.Email ?? "",
-                    Role = roles.Count > 0 ? roles[0] : "User"
-                };
-                userViewModels.Add(userViewModel);
-            }
-            var model = new AdminIndexViewModel
-            {
-                Users = userViewModels
-            };
-
-            return View(model);
+            return RedirectToAction("ManageUsers", "Admin");
         }
 
 
@@ -78,6 +62,14 @@ namespace Bel_Souvenirs.Controllers
         {
             var products = await _productService.GetAllProducts();
             return View(products);
+        }
+
+        [Authorize (Roles = "Admin")]
+        public async Task<IActionResult> ManageReviews()
+        {
+            var reviews = await _reviewService.GetAllReviewsViewModelsAsync();
+
+            return View(reviews);
         }
 
         [Authorize(Roles = "Admin")]
@@ -141,10 +133,75 @@ namespace Bel_Souvenirs.Controllers
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Ошибка при добавлении товара " + ex.Message;
+                TempData["ErrorMessage"] = "Ошибка при редактировании товара " + ex.Message;
             }
 
             return RedirectToAction("ManageProducts");
         }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> EditUser([FromForm] string id, [FromForm] string fullName)
+        {
+         
+
+            try
+            {
+                await _userService.UpdateFullNameAsync(id, fullName);
+                TempData[key: "SuccessMessage"] = "Пользователь успешно обновлён";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Ошибка при редактировании пользователя " + ex.Message;
+            }
+
+            return RedirectToAction("ManageUsers");
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            try
+            {
+                await _userService.DeleteUserAsync(id);
+                TempData[key: "SuccessMessage"] = "Пользователь успешно удалён";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Ошибка при удалении пользователя " + ex.Message;
+            }
+
+            return RedirectToAction("ManageUsers");
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            try
+            {
+                await _productService.DeleteProductAsync(id);
+                TempData[key: "SuccessMessage"] = "Товар успешно удалён";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Ошибка при удалении товара " + ex.Message;
+            }
+
+            return RedirectToAction("ManageProducts");
+
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteReview(int id)
+        {
+            var result = await _reviewService.DeleteReviewAsync(id);
+            if (result)
+            {
+                TempData[key: "SuccessMessage"] = "Комментарий успешно удалён";
+                return RedirectToAction("ManageReviews");
+            }
+            TempData["ErrorMessage"] = "Ошибка при удалении комментария ";
+            return RedirectToAction("ManageReviews");
+        }
+
     }
 }
