@@ -93,9 +93,10 @@
                             <span>Итого</span>
                             <span>@Model.Items.Sum(i => i.Quantity * i.Product.Price).ToString("C", new System.Globalization.CultureInfo("be-BY"))</span>
                         </div>
-                        <a asp-controller="Order" asp-action="Checkout" class="btn btn-danger w-100 mt-3 py-2">
+                        <button type="button" class="btn btn-danger w-100 mt-3 py-2" data-bs-toggle="modal" data-bs-target="#checkoutModal">
                             Перейти к оформлению
-                        </a>
+                        </button>
+
                     </div>
                 </div>
             </div>
@@ -103,6 +104,72 @@
     }
 </div>
 
+
+<!-- Модальное окно оформления заказа -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <form id="checkoutForm" method="post" asp-controller="Cart" asp-action="OrderAll">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="checkoutModalLabel">Подтверждение заказа</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Товары в заказе:</h6>
+                    <ul class="list-group mb-3">
+                        @foreach (var item in Model.Items)
+                        {
+                            <li class="list-group-item d-flex align-items-center">
+                                <img src="@(item.Product.ImagePath ?? "https://via.placeholder.com/60")"
+                                     alt="@item.Product.Name"
+                                     class="rounded me-3"
+                                     style="width: 60px; height: 60px; object-fit: cover;">
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold">@item.Product.Name</div>
+                                    <div class="text-muted">Кол-во: @item.Quantity</div>
+                                </div>
+                                <div class="text-end ms-3">
+                                    <div>@((item.Product.Price * item.Quantity).ToString("C", new System.Globalization.CultureInfo("be-BY")))</div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+
+                    <div class="d-flex justify-content-between fs-5 fw-bold">
+                        <span>Общая сумма:</span>
+                        <span>@Model.Items.Sum(i => i.Quantity * i.Product.Price).ToString("C", new System.Globalization.CultureInfo("be-BY"))</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отменить</button>
+                    <button type="submit" class="btn btn-success">Оформить заказ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script src="~/js/cart.js"></script>
+    <script>
+        $('#checkoutForm').submit(function (e) {
+            e.preventDefault();
+
+            $.post($(this).attr('action'), $(this).serialize())
+                .done(function (response) {
+                    if (response.success) {
+                        $('#checkoutModal').modal('hide');
+                        $('#successMessage').text(response.message);
+                        $('#orderSuccessModal').modal('show');
+
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        alert(response.message);
+                    }
+                })
+                .fail(function () {
+                    alert("Ошибка сервера при оформлении заказа.");
+                });
+        });
+    </script>
 }

@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bel_Souvenirs.Services
 {
-
     public class ProductService(AppDbContext context, IReviewService reviewService) : IProductService
     {
         private readonly AppDbContext _context = context;

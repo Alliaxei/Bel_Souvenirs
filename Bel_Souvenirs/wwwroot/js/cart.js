@@ -68,6 +68,7 @@ $(document).on('click', '.cart-button', function (e) {
             data: { productId: productId },
             success: function (response) {
                 if (response.success) {
+                    console.log("Успешно выполнено");
                     button.toggleClass('btn-danger btn-primary')
                         .text(isRemoveAction ? 'В корзину' : 'Удалить');
                     updateCartCount(response.cartCount);
@@ -75,8 +76,10 @@ $(document).on('click', '.cart-button', function (e) {
             },
             error: function (xhr) {
                 if (xhr.status === 401) {
+                    console.log("Ошибка"  );
                     $('#authRequiredModal').modal('show');
                 } else {
+                    console.log("Ошибка" + xhr.responseJSON?.message);
                     alert('Ошибка: ' + (xhr.responseJSON?.message || 'Операция не выполнена'));
                 }
             },

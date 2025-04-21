@@ -134,7 +134,11 @@ namespace Bel_Souvenirs.Controllers
                 }
 
                 var result = await _signInManager.PasswordSignInAsync(
-                    user, model.Password, model.RememberMe, lockoutOnFailure: false);
+                    user,
+                    model.Password,
+                    model.RememberMe,
+                    lockoutOnFailure: false
+                    );
 
                 if (result.Succeeded)
                 {

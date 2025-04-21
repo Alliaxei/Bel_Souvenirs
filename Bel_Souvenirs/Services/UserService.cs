@@ -12,6 +12,16 @@ namespace Bel_Souvenirs.Services
 
         public async Task<IdentityResult> RegisterUserAsync(RegisterViewModel model)
         {
+            var existingUser = await _userManager.FindByEmailAsync(model.Email);
+
+            if (existingUser != null)
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Description = "Пользователь с таким Email уже существует"
+                });
+            }
+
             var user = new ApplicationUser {
                 Email = model.Email,
                 UserName = model.Email,

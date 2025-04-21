@@ -11,8 +11,10 @@
         <div class="col-md-8">
             <form asp-action="Index" method="get" class="form-inline">
                 <div class="input-group w-100">
-                    <input type="text" class="form-control" name="searchString"
+                    <input type="text" class="form-control" name="searchString" value="@ViewBag.SearchString"
                     placeholder="Поиск товаров...">
+                    <input type="hidden" name="category" value="@ViewBag.CurrentCategory" />
+                    <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSort" />
                     <button class="btn btn-success" type="submit">
                         <i class="fas fa-search"></i>
                     </button>
@@ -28,19 +30,21 @@
                 <ul class="dropdown-menu">
                     <li>
                         <a class="dropdown-item" asp-action="Index"
-                        asp-route-sortOrder="@ViewData["NameSort"]">По названию</a>
+                           asp-route-sortOrder="@ViewData["NameSort"]"
+                           asp-route-searchString="@ViewBag.SearchString"
+                           asp-route-category="@ViewBag.CurrentCategory">По названию</a>
                     </li>
                     <li>
                         <a class="dropdown-item" asp-action="Index"
-                        asp-route-sortOrder="@ViewData["PriceSort"]">По цене вверх</a>
+                           asp-route-sortOrder="@ViewData["PriceSort"]"
+                           asp-route-searchString="@ViewBag.SearchString"
+                           asp-route-category="@ViewBag.CurrentCategory">По цене</a>
                     </li>
                     <li>
                         <a class="dropdown-item" asp-action="Index"
-                        asp-route-sortOrder="@ViewData["PriceSort"]">По цене вниз</a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" asp-action="Index"
-                        asp-route-sortOrder="@ViewData["PopularSort"]">Сначала популярные</a>
+                           asp-route-sortOrder="@ViewData["PopularSort"]"
+                           asp-route-searchString="@ViewBag.SearchString"
+                           asp-route-category="@ViewBag.CurrentCategory">Сначала популярные</a>
                     </li>
                 </ul>
             </div>
@@ -60,15 +64,21 @@
                         {
                             <a asp-action="Index"
                             asp-route-category="@cat"
+                            asp-route-searchString="@ViewBag.SearchString"
+                            asp-route-sortOrder="@ViewBag.CurrentSort"
                             class="list-group-item list-group-item-action @(ViewBag.CurrentCategory == cat ? "active" : "")">
                                 @cat
                             </a>
                         }
                     </div>
                 </div>
-                <a asp-action="Index" class="btn btn-outline-secondary mt-3 w-100">
+                <a asp-action="Index" class="btn btn-outline-secondary mt-3 w-100"
+                   asp-route-searchString=""
+                   asp-route-category=""
+                   asp-route-sortOrder="">
                     <i class="fas fa-sync-alt"></i> Сбросить фильтры
                 </a>
+
             </div>
         </div>
 
@@ -83,13 +93,35 @@
                             <div class="card h-100">
                                 <a asp-controller="Product" asp-action="Details" asp-route-id="@_product.Product.Id">
                                     <img src="@_product.Product.ImagePath" class="card-img-top" alt="@_product.Product.Name"
-                                    style="height: 200px; object-fit: cover;">
+                                         style="height: 200px; object-fit: cover;">
                                 </a>
                                 <div class="card-body">
                                     <h5 class="card-title">@_product.Product.Name</h5>
                                     <p class="card-text">@_product.Product.Description</p>
+
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="star-rating d-flex gap-1">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= Math.Floor(_product.AverageRating))
+                                                {
+                                                    <i class="bi bi-star-fill text-warning fs-5"></i>
+                                                }
+                                                else if (i == Math.Ceiling(_product.AverageRating) && _product.AverageRating % 1 != 0)
+                                                {
+                                                    <i class="bi bi-star-half text-warning fs-5"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-star text-secondary fs-5"></i>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+
                                     <p class="text-success fw-bold">@_product.Product.Price.ToString("C", new System.Globalization.CultureInfo("be-BY"))</p>
                                 </div>
+
                                 @if (!User.IsInRole("Admin"))
                                 {
                                     <button class="btn @(_product.IsInCart ? "btn-danger" : "btn-primary") cart-button"
@@ -100,9 +132,9 @@
                             </div>
                         </div>
                     }
+
                 </div>
             }
-
             else
             {
                 <div class="alert alert-info">

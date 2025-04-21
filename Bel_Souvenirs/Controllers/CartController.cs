@@ -3,6 +3,7 @@ using Bel_Souvenirs.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 
 namespace Bel_Souvenirs.Controllers
@@ -30,7 +31,7 @@ namespace Bel_Souvenirs.Controllers
             return View(cart);
         }
 
-        [Authorize(Roles = "User")]
+
         [HttpPost]
         public async Task<IActionResult> AddToCart(int productId)
         {
@@ -48,7 +49,7 @@ namespace Bel_Souvenirs.Controllers
             var cartCount = await _cartService.GetCartItemsCountAsync();
             return Json(new { success = true, cartCount });
         }
-        [Authorize(Roles = "User")]
+
         [HttpPost]
         public async Task<IActionResult> RemoveFromCart(int productId)
         {
@@ -68,7 +69,6 @@ namespace Bel_Souvenirs.Controllers
             return Json(new { success = true, cartCount });
         }
 
-        [Authorize(Roles = "User")]
         [HttpPost]
         public async Task<IActionResult> RemoveItem(int itemId)
         {
@@ -95,7 +95,6 @@ namespace Bel_Souvenirs.Controllers
             });
         }
 
-        [Authorize(Roles = "User")]
         [HttpPost]
         public async Task<IActionResult> UpdateQuantity(int itemId, int quantity)
         {
@@ -121,7 +120,6 @@ namespace Bel_Souvenirs.Controllers
 
         }
 
-        [Authorize(Roles = "User")]
         [HttpPost]
         public async Task<IActionResult> Order(int id)
         {
@@ -155,6 +153,25 @@ namespace Bel_Souvenirs.Controllers
             {
                 return Json(new { 
                     success = false, message = "Ошибка при оформлении заказа." });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> OrderAll()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var items = await _cartService.GetCartAsync(userId);
+
+            
+            foreach (var item in items)
+            {
+                await _productService.
             }
         }
     }

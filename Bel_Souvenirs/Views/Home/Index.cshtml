@@ -57,7 +57,29 @@
                             <a asp-controller="Product" asp-action="Details" asp-route-id="@_product.Product.Id" class="text-decoration-none text-dark">
                                 <h5 class="card-title">@_product.Product.Name</h5>
                             </a>
+
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="star-rating d-flex gap-1">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= Math.Floor(_product.AverageRating))
+                                        {
+                                            <i class="bi bi-star-fill text-warning fs-5"></i>
+                                        }
+                                        else if (i == Math.Ceiling(_product.AverageRating) && _product.AverageRating % 1 != 0)
+                                        {
+                                            <i class="bi bi-star-half text-warning fs-5"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-star text-secondary fs-5"></i>
+                                        }
+                                    }
+                                </div>
+                            </div>
+
                             <p class="text-success fw-semibold">@_product.Product.Price.ToString("C", new System.Globalization.CultureInfo("be-BY"))</p>
+
                             <div class="mt-auto d-flex flex-wrap gap-2">
                                 @if (!User.IsInRole("Admin"))
                                 {
@@ -75,6 +97,7 @@
                     </div>
                 </div>
             }
+
         </div>
     </div>
 

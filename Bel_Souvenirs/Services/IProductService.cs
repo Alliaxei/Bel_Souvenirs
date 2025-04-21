@@ -15,5 +15,6 @@ namespace Bel_Souvenirs.Services
         Task AddProductAsync(AdminProductViewModel model, string imagePath);
         Task UpdateProductAsync(int id, AdminProductViewModel model, string? imagePath);
         Task DeleteProductAsync(int id);
+        Task IncreaseCountOfOrdersAsync(int productId);
     }
 }

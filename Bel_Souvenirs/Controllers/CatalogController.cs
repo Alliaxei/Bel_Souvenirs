@@ -1,8 +1,6 @@
-﻿using Bel_Souvenirs.Models;
-using Bel_Souvenirs.Services;
+﻿using Bel_Souvenirs.Services;
 using Bel_Souvenirs.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Bel_Souvenirs.Controllers
@@ -14,23 +12,34 @@ namespace Bel_Souvenirs.Controllers
         public async Task<IActionResult> Index(string searchString, string category, string sortOrder)
         {
 
+            ViewBag.SearchString = searchString;
+            ViewBag.CurrentCategory = category;
+            ViewBag.CurrentSort = sortOrder;
+
+
             var filteredProducts = await _productService.GetFilteredProductsAsync(searchString, category, sortOrder);
 
             var userId = User.Identity?.IsAuthenticated ?? false ? User.FindFirstValue(ClaimTypes.NameIdentifier) : null;
-            var productIds = userId != null ?
-                await _cartService.GetCartItemsIdsAsync(userId) : [];
+            var productIds = userId != null ? await _cartService.GetCartItemsIdsAsync(userId) : [];
 
 
-            var productsModel = filteredProducts.Select(p => new ProductViewModel
+            var productsModel = new List<ProductViewModel>();
+            foreach (var product in filteredProducts)
             {
-                Product = p,
-                IsInCart = productIds.Contains(p.Id)
-            }).ToList();
+                var averageRating = await _productService.GetAverageRatingAsync(product.Id);
+
+                productsModel.Add(new ProductViewModel
+                {
+                    Product = product,
+                    IsInCart = productIds.Contains(product.Id),
+                    AverageRating = averageRating,
+                });
+            }
 
             ViewBag.Categories = await _productService.GetCategoryNamesAsync();
             ViewBag.CurrentCategory = category;
             ViewBag.NameSort = sortOrder == "name_desc" ? "name" : "name_desc";
-            ViewBag.PriceSort = sortOrder == "price_desc" ? "price" : "price_desc";
+            ViewBag.PriceSort = sortOrder == "price" ? "price_desc" : "price";
             ViewBag.PopularSort = sortOrder == "popular" ? null : "popular";
             return View(productsModel);
         }
