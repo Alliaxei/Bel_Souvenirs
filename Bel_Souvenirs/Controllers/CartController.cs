@@ -1,9 +1,7 @@
 ﻿using Bel_Souvenirs.Models;
 using Bel_Souvenirs.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 
 namespace Bel_Souvenirs.Controllers
@@ -163,16 +161,26 @@ namespace Bel_Souvenirs.Controllers
             
             if (userId == null)
             {
-                return Unauthorized();
+                TempData["ErrorMessage"] = "Не удалось идентифицировать пользователя.";
+                return RedirectToAction("Index");
             }
 
-            var items = await _cartService.GetCartAsync(userId);
+            var cart = await _cartService.GetCartAsync(userId) ?? throw new Exception("Ошибка при поиске корзины");
+            var items = cart.Items.ToList();
+            if (items.Count == 0)
+            {
+                TempData["ErrorMessage"] = "Корзина пуста.";
+                return RedirectToAction("Index");
+            }
 
-            
             foreach (var item in items)
             {
-                await _productService.
+                await _productService.IncreaseCountOfOrdersAsync(item.ProductId, item.Quantity);
             }
+            await _cartService.DeleteAllFromCartAsync(userId);
+
+            TempData["SuccessMessage"] = "Ваш заказ успешно оформлен!";
+            return RedirectToAction("Index");
         }
     }
 }

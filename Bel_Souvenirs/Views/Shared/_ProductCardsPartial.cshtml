@@ -2,47 +2,52 @@
 
 @foreach (var _product in Model)
 {
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm border-0 rounded-4 d-flex flex-column hover-shadow">
-            <a asp-controller="Product" asp-action="Details" asp-route-id="@_product.Product.Id">
-                <img src="@_product.Product.ImagePath" class="card-img-top rounded-top-4"
-                style="height: 250px; object-fit: cover;" alt="@_product.Product.Name" />
+    <div class="col-md-3 mb-4">
+        <div class="card h-100 border rounded-3 shadow-sm hover-shadow position-relative">
+            <a asp-controller="Product" asp-action="Details" asp-route-id="@_product.Product.Id" class="text-decoration-none">
+                <img src="@_product.Product.ImagePath"
+                     class="card-img-top p-3"
+                     style="max-height: 200px; object-fit: contain;">
             </a>
             <div class="card-body d-flex flex-column">
-                <h5 class="card-title">@_product.Product.Name</h5>
+                <a asp-controller="Product" asp-action="Details" asp-route-id="@_product.Product.Id" class="text-decoration-none text-dark">
+                    <h6 class="card-title">@_product.Product.Name</h6>
+                </a>
 
-                <div class="d-flex align-items-center mb-3">
-                    <span class="fs-5 me-3"></span>
-                    <div class="star-rating d-flex gap-1">
-                        @for (int i = 1; i <= 5; i++)
+                <div class="d-flex align-items-center gap-1 mb-2">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= Math.Floor(_product.AverageRating))
                         {
-                            if (i <= Math.Floor(_product.AverageRating))
-                            {
-                                <i class="bi bi-star-fill text-warning fs-5"></i>
-                            }
-                            else if (i == Math.Ceiling(_product.AverageRating) && _product.AverageRating % 1 != 0)
-                            {
-                                <i class="bi bi-star-half text-warning fs-5"></i>
-                            }
-                            else
-                            {
-                                <i class="bi bi-star text-secondary fs-5"></i>
-                            }
+                            <i class="bi bi-star-fill text-warning fs-6"></i>
                         }
-                    </div>
+                        else if (i == Math.Ceiling(_product.AverageRating) && _product.AverageRating % 1 != 0)
+                        {
+                            <i class="bi bi-star-half text-warning fs-6"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-star text-secondary fs-6"></i>
+                        }
+                    }
                 </div>
 
-                <p class="text-danger fw-semibold">@_product.Product.Price.ToString("C", new System.Globalization.CultureInfo("be-BY"))</p>
+                <div class="mb-2">
+                    <span class="fw-bold fs-5 text-dark">
+                        @_product.Product.Price.ToString("C", new System.Globalization.CultureInfo("be-BY"))
+                    </span>
+                </div>
+
                 <div class="mt-auto d-flex flex-wrap gap-2">
                     @if (!User.IsInRole("Admin"))
                     {
-                        <button class="btn @(_product.IsInCart ? "btn-danger" : "btn-primary") flex-grow-1 cart-button"
+                        <button class="btn btn-sm @(_product.IsInCart ? "btn-outline-danger" : "btn-outline-primary") flex-grow-1 cart-button"
                                 data-product-id="@_product.Product.Id">
                             @(_product.IsInCart ? "Удалить" : "В корзину")
                         </button>
                     }
                     <a asp-controller="Product" asp-action="Details" asp-route-id="@_product.Product.Id"
-                       class="btn btn-outline-secondary">
+                       class="btn btn-sm btn-outline-secondary">
                         Подробнее
                     </a>
                 </div>
@@ -50,3 +55,17 @@
         </div>
     </div>
 }
+
+<style>
+    .hover-shadow:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+        transition: all 0.2s;
+    }
+
+    .card-title {
+        min-height: 3em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>

@@ -12,92 +12,151 @@
             <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Войти</a>
         </div>
     }
-    else if (Model.Items.Count == 0)
-    {
-        <div class="empty-cart text-center py-5">
-            <img src="https://via.placeholder.com/200" alt="Пустая корзина" class="mb-4" style="opacity: 0.5;">
-            <h3 class="mb-3">Корзина пуста</h3>
-            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Перейти к покупкам</a>
-        </div>
-    }
     else
     {
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card-account mb-4">
-                    <div class="card-header bg-white">
-                        <h4 class="mb-0">Ваша корзина</h4>
-                        <span class="text-muted">@Model.Items.Count товар(ов)</span>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="list-group list-group-flush">
-                            @foreach (var item in Model.Items)
-                            {
-                                <div class="list-group-item">
-                                    <div class="row align-items-center">
-                                        <div class="col-2">
-                                             <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Product.Id">
-                                                <img src="@(item.Product.ImagePath ?? "Изображение не найдено")"
-                                                     alt="@item.Product.Name"
-                                                     class="img-fluid rounded">
-                                             </a>
-                                        </div>
-                                        <div class="col-5">
-                                            <h5 class="mb-1">@item.Product.Name</h5>
-                                        </div>
-                                        <div class="col-2">
-                                            <div class="input-group">
-                                                <button class="btn btn-outline-secondary minus-btn" type="button">-</button>
-                                                <input type="text" class="form-control text-center quantity-input"
-                                                       value="@item.Quantity" data-id="@item.Id">
-                                                <button class="btn btn-outline-secondary plus-btn" type="button">+</button>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+            </div>
+        }
+
+        @if (Model.Items.Count == 0)
+        {
+            <div class="empty-cart text-center py-5">
+                <img src="https://via.placeholder.com/200" alt="Пустая корзина" class="mb-4" style="opacity: 0.5;">
+                <h3 class="mb-3">Корзина пуста</h3>
+                <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Перейти к покупкам</a>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card-account mb-4">
+                        <div class="card-header bg-white">
+                            <h4 class="mb-0">Ваша корзина</h4>
+                            <span class="text-muted">@Model.Items.Count товар(ов)</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="list-group list-group-flush">
+                                @foreach (var item in Model.Items)
+                                {
+                                    <div class="list-group-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-2">
+                                                <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Product.Id">
+                                                    <img src="@(item.Product.ImagePath ?? "https://via.placeholder.com/100")"
+                                                         alt="@item.Product.Name"
+                                                         class="img-fluid rounded" />
+                                                </a>
+                                            </div>
+                                            <div class="col-5">
+                                                <h5 class="mb-1">@item.Product.Name</h5>
+                                            </div>
+                                            <div class="col-2">
+                                                <div class="input-group">
+                                                    <button class="btn btn-outline-secondary minus-btn" type="button">-</button>
+                                                    <input type="text" class="form-control text-center quantity-input"
+                                                           value="@item.Quantity" data-id="@item.Id" />
+                                                    <button class="btn btn-outline-secondary plus-btn" type="button">+</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-2 text-end">
+                                                <h5 class="mb-0">@((item.Quantity * item.Product.Price).ToString("C", new System.Globalization.CultureInfo("be-BY")))</h5>
+                                                <small class="text-muted">@item.Product.Price.ToString("C", new System.Globalization.CultureInfo("be-BY")) за шт.</small>
+                                            </div>
+                                            <div class="col-1 text-end">
+                                                <button class="cart-delete-btn remove-from-cart-btn"
+                                                        data-item-id="@item.Id"
+                                                        title="Удалить из корзины">
+                                                    <svg class="trash-icon" viewBox="0 0 24 24">
+                                                        <path fill="currentColor" d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z" />
+                                                    </svg>
+                                                </button>
                                             </div>
                                         </div>
-                                        <div class="col-2 text-end">
-                                            <h5 class="mb-0">@((item.Quantity * item.Product.Price).ToString("C", new System.Globalization.CultureInfo("be-BY")))</h5>
-                                            <small class="text-muted">@item.Product.Price.ToString("C", new System.Globalization.CultureInfo("be-BY")) за шт.</small>
-                                        </div>
-                                        <div class="col-1 text-end">
-                                            <button class="cart-delete-btn remove-from-cart-btn"
-                                                    data-item-id="@item.Id"
-                                                    title="Удалить из корзины">
-                                                <svg class="trash-icon" viewBox="0 0 24 24">
-                                                    <path fill="currentColor" d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z" />
-                                                </svg>
-                                            </button>
-                                        </div>
                                     </div>
-                                </div>
-                            }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card-account sticky-top" style="top: 20px;">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Ваш заказ</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Товары (@Model.Items.Sum(i => i.Quantity))</span>
+                                <span>@Model.Items.Sum(i => i.Quantity * i.Product.Price).ToString("C", new System.Globalization.CultureInfo("be-BY"))</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Доставка</span>
+                                <span class="text-success">Бесплатно</span>
+                            </div>
+                            <hr />
+                            <div class="d-flex justify-content-between fw-bold fs-5">
+                                <span>Итого</span>
+                                <span>@Model.Items.Sum(i => i.Quantity * i.Product.Price).ToString("C", new System.Globalization.CultureInfo("be-BY"))</span>
+                            </div>
+                            <button type="button" class="btn btn-danger w-100 mt-3 py-2" data-bs-toggle="modal" data-bs-target="#checkoutModal">
+                                Перейти к оформлению
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-4">
-                <div class="card-account sticky-top" style="top: 20px;">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0">Ваш заказ</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Товары (@Model.Items.Sum(i => i.Quantity))</span>
-                            <span>@Model.Items.Sum(i => i.Quantity * i.Product.Price).ToString("C", new System.Globalization.CultureInfo("be-BY"))</span>
+        }
+        <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <form id="checkoutForm" method="post" asp-controller="Cart" asp-action="OrderAll">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="checkoutModalLabel">Подтверждение заказа</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                         </div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Доставка</span>
-                            <span class="text-success">Бесплатно</span>
+                        <div class="modal-body">
+                            <h6>Товары в заказе:</h6>
+                            <ul class="list-group mb-3">
+                                @foreach (var item in Model.Items)
+                                {
+                                    <li class="list-group-item d-flex align-items-center">
+                                        <img src="@(item.Product.ImagePath ?? "https://via.placeholder.com/60")"
+                                             alt="@item.Product.Name"
+                                             class="rounded me-3"
+                                             style="width: 60px; height: 60px; object-fit: cover;" />
+                                        <div class="flex-grow-1">
+                                            <div class="fw-semibold">@item.Product.Name</div>
+                                            <div class="text-muted">Кол-во: @item.Quantity</div>
+                                        </div>
+                                        <div class="text-end ms-3">
+                                            <div>@((item.Product.Price * item.Quantity).ToString("C", new System.Globalization.CultureInfo("be-BY")))</div>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                            <div class="d-flex justify-content-between fs-5 fw-bold">
+                                <span>Общая сумма:</span>
+                                <span>@Model.Items.Sum(i => i.Quantity * i.Product.Price).ToString("C", new System.Globalization.CultureInfo("be-BY"))</span>
+                            </div>
                         </div>
-                        <hr>
-                        <div class="d-flex justify-content-between fw-bold fs-5">
-                            <span>Итого</span>
-                            <span>@Model.Items.Sum(i => i.Quantity * i.Product.Price).ToString("C", new System.Globalization.CultureInfo("be-BY"))</span>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отменить</button>
+                            <button type="submit" class="btn btn-success">Оформить заказ</button>
                         </div>
-                        <button type="button" class="btn btn-danger w-100 mt-3 py-2" data-bs-toggle="modal" data-bs-target="#checkoutModal">
-                            Перейти к оформлению
-                        </button>
-
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -105,71 +164,7 @@
 </div>
 
 
-<!-- Модальное окно оформления заказа -->
-<div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <form id="checkoutForm" method="post" asp-controller="Cart" asp-action="OrderAll">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="checkoutModalLabel">Подтверждение заказа</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                </div>
-                <div class="modal-body">
-                    <h6>Товары в заказе:</h6>
-                    <ul class="list-group mb-3">
-                        @foreach (var item in Model.Items)
-                        {
-                            <li class="list-group-item d-flex align-items-center">
-                                <img src="@(item.Product.ImagePath ?? "https://via.placeholder.com/60")"
-                                     alt="@item.Product.Name"
-                                     class="rounded me-3"
-                                     style="width: 60px; height: 60px; object-fit: cover;">
-                                <div class="flex-grow-1">
-                                    <div class="fw-semibold">@item.Product.Name</div>
-                                    <div class="text-muted">Кол-во: @item.Quantity</div>
-                                </div>
-                                <div class="text-end ms-3">
-                                    <div>@((item.Product.Price * item.Quantity).ToString("C", new System.Globalization.CultureInfo("be-BY")))</div>
-                                </div>
-                            </li>
-                        }
-                    </ul>
-
-                    <div class="d-flex justify-content-between fs-5 fw-bold">
-                        <span>Общая сумма:</span>
-                        <span>@Model.Items.Sum(i => i.Quantity * i.Product.Price).ToString("C", new System.Globalization.CultureInfo("be-BY"))</span>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отменить</button>
-                    <button type="submit" class="btn btn-success">Оформить заказ</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 @section Scripts {
     <script src="~/js/cart.js"></script>
-    <script>
-        $('#checkoutForm').submit(function (e) {
-            e.preventDefault();
-
-            $.post($(this).attr('action'), $(this).serialize())
-                .done(function (response) {
-                    if (response.success) {
-                        $('#checkoutModal').modal('hide');
-                        $('#successMessage').text(response.message);
-                        $('#orderSuccessModal').modal('show');
-
-                        setTimeout(() => location.reload(), 2000);
-                    } else {
-                        alert(response.message);
-                    }
-                })
-                .fail(function () {
-                    alert("Ошибка сервера при оформлении заказа.");
-                });
-        });
-    </script>
 }

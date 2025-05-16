@@ -96,7 +96,6 @@ namespace Bel_Souvenirs.Services
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
         }
-
         public async Task UpdateProductAsync(int id, AdminProductViewModel model, string? imagePath)
         {
             var product = await _context.Products.FindAsync(id) ?? throw new Exception("Товар не найден");
@@ -114,13 +113,23 @@ namespace Bel_Souvenirs.Services
             _context.Products.Update(product);
             await _context.SaveChangesAsync();
         }
-
         public async Task DeleteProductAsync(int id)
         {
             var product = await _context.Products.FindAsync(id) ?? throw new Exception ("Товар не найден");
 
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
+        }
+        public async Task IncreaseCountOfOrdersAsync(int productId, int amount)
+        {
+            var product = await _context.Products.FindAsync(productId);
+
+            if (product != null)
+            {
+                product.AmountOfOrders += amount;
+                _context.Products.Update(product);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

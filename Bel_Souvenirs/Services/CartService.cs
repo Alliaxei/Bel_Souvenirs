@@ -119,6 +119,18 @@ namespace Bel_Souvenirs.Services
 
             return true;
         }
+        public async Task DeleteAllFromCartAsync(string userId)
+        {
+           var cart = await _appDbContext.Carts
+                .Where(c => c.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (cart != null && cart.Items.Count != 0)
+            {
+                _appDbContext.CartItems.RemoveRange(cart.Items);
+                await _appDbContext.SaveChangesAsync();
+            }
+        }
 
     }
 }
